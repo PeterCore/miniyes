@@ -84,7 +84,7 @@
 
     <view class="mt-20rpx bg-white">
       <u-cell-group>
-        <u-cell title="课程类型" :value="course" is-link @click="pickCourses" />
+        <u-cell title="课程类型" :value="courseType" is-link @click="pickCourses" />
       </u-cell-group>
     </view>
     <u-picker :show="showPicker" :columns="columns" @confirm="confirm" @cancel="cancel" />
@@ -95,17 +95,21 @@
 </template>
 
 <script setup lang="ts">
+import { useCourseStore } from '@/store/modules/course';
 import { reactive, ref } from 'vue';
+
+const courseStore = useCourseStore();
 
 const value = ref('');
 const cnyValue = ref(80);
 const duration = ref(20);
-const course = ref('英语');
+const courseType = ref('文化');
+const courseName = ref('英语');
 const showPicker = ref(false);
 const disabled = ref(false);
 
 const columns = reactive([
-  ['英语', '语文', '数学'],
+  ['文化', '体育', '音乐'],
 ]);
 const increased = () => {
   // +
@@ -118,9 +122,24 @@ const edit_cnyValue = (e: any) => {
   cnyValue.value = _cny;
 };
 
+// export interface CourseState {
+//   course_id?: number;
+//   course_name?: string;
+//   course_duration?: number;
+//   course_cost?: number;
+//   course_type?: string;
+// }
+
 const submit = () => {
-  uni.showLoading({ title: '提交中' });
-  disabled.value = true;
+  // uni.showLoading({ title: '提交中' });
+  // disabled.value = true;
+  const newCourse = { course_id: 1, course_name: courseName.value, course_duration: duration.value, course_cost: cnyValue.value, course_type: courseType.value };
+  courseStore.addCourse(newCourse);
+
+  const courses = courseStore.getAllCourses;
+  console.log(`----${JSON.stringify(courses)}---`);
+
+  // console.log(`-------${courses?.toString()}`);
 };
 
 const pickCourses = () => {
@@ -128,7 +147,7 @@ const pickCourses = () => {
 };
 const confirm = (e: any) => {
   console.log('confirm', e);
-  course.value = e.value[0];
+  courseType.value = e.value[0];
   showPicker.value = false;
 };
 
@@ -147,6 +166,7 @@ async function decreased() {
 
 async function edit_course(e: any) {
   console.log(e);
+  courseName.value = e.detail.value;
 }
 
 async function edit_duration(e: any) {
