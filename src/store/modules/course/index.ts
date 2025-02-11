@@ -14,6 +14,9 @@ export const useCourseStore = defineStore('course', {
     removeCourse(courseId: number) {
       this.courses = this.courses?.filter(course => course.course_id !== courseId); // 根据 ID 删除课程
     },
+    removeCourseWithName(courseName: string) {
+      this.courses = this.courses?.filter(course => course.course_name !== courseName); // 根据 ID 删除课程
+    },
     // 更新课程
     updateCourse(courseId: number, updatedCourse: CourseInfo) {
       const courseIndex = this.courses?.findIndex(course => course.course_id === courseId);

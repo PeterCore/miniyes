@@ -24,7 +24,7 @@
       </view>
       <view class="w-full">
         <input
-          v-model="value"
+          v-model="courseName"
           placeholder="请输入课程名称(英语，数学，语文)"
           placeholderStyle="font-size:9 color: #ededed"
           border="surround"
@@ -95,26 +95,36 @@
 </template>
 
 <script setup lang="ts">
+import type { CourseInfo } from '@/store/modules/course/types';
 import { useCourseStore } from '@/store/modules/course';
 import { reactive, ref } from 'vue';
 
 const courseStore = useCourseStore();
 
-const value = ref('');
 const cnyValue = ref(80);
 const duration = ref(20);
 const courseType = ref('文化');
-const courseName = ref('英语');
+const courseName = ref('');
 const showPicker = ref(false);
 const disabled = ref(false);
 
-const columns = reactive([
-  ['文化', '体育', '音乐'],
-]);
+const columns = reactive([['文化', '体育', '音乐']]);
 const increased = () => {
   // +
   duration.value++;
 };
+// const course: CourseInfo = {} as CourseInfo;
+
+onLoad((query: any) => {
+  if (query.course !== undefined) {
+    const courseParam = decodeURIComponent(query.course);
+    const courseInfo = JSON.parse(courseParam) as CourseInfo;
+    cnyValue.value = courseInfo.course_cost ?? 20;
+    duration.value = courseInfo.course_duration ?? 20;
+    courseType.value = courseInfo.course_type ?? '文化';
+    courseName.value = courseInfo.course_name ?? '英语';
+  }
+});
 
 const edit_cnyValue = (e: any) => {
   const inputValue = e.detail.value;
@@ -131,22 +141,38 @@ const edit_cnyValue = (e: any) => {
 // }
 
 const submit = () => {
-  // uni.showLoading({ title: '提交中' });
-  // disabled.value = true;
-  const newCourse = { course_id: 1, course_name: courseName.value, course_duration: duration.value, course_cost: cnyValue.value, course_type: courseType.value };
+  uni.showLoading({ title: '提交中' });
+  disabled.value = true;
+  const newCourse = {
+    course_name: courseName.value,
+    course_duration: duration.value,
+    course_cost: cnyValue.value,
+    course_type: courseType.value,
+  };
   courseStore.addCourse(newCourse);
-
-  const courses = courseStore.getAllCourses;
-  console.log(`----${JSON.stringify(courses)}---`);
+  uni.hideLoading();
+  uni.navigateBack({
+    delta: 1, // 返回到首页
+  }); // const courses = courseStore.getAllCourses;
+  // console.log(`----${JSON.stringify(courses)}---`);
 
   // console.log(`-------${courses?.toString()}`);
 };
+
+function goListPages() {
+  // const pages = getCurrentPages();
+  uni.navigateBack({
+    delta: 1, // 返回到首页
+  });
+  // uni.switchTab({
+  //   url: '/pages/tab/list/index',
+  // });
+}
 
 const pickCourses = () => {
   showPicker.value = true;
 };
 const confirm = (e: any) => {
-  console.log('confirm', e);
   courseType.value = e.value[0];
   showPicker.value = false;
 };

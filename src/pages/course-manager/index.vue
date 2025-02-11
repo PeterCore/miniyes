@@ -1,6 +1,6 @@
 <template>
   <view class="h-full w-full flex flex-col">
-    <view class="w-full flex flex-row items-center justify-between border-b border-gray-200 bg-white py-3">
+    <view class="mb-[10rpx] w-full flex flex-row items-center justify-between border-b border-gray-200 bg-white py-3">
       <view class="w-15" />
       <view class="w-full flex flex-row items-center justify-start">
         <u-icon name="list-dot" color="text-orange-500" size="24" />
@@ -14,12 +14,50 @@
       </button>
       <view class="w-20" />
     </view>
+    <view v-for="(item, index) in courses" :key="index">
+      <view class="bg-white">
+        <u-cell :title="`${item.course_name}` " is-link @click="goSchedulePage(item)" />
+      </view>
+    </view>
+    <view v-if="(courses || []).length > 0">
+      <view class="mt-[1rpx] h-[80rpx] w-full flex flex-row items-center bg-white px-[1rpx] px-[30rpx] text-28 color-#666">
+        共有{{ courses?.length }}数据
+      </view>
+    </view>
   </view>
 </template>
 
 <script setup lang="ts">
+import type { CourseInfo } from '@/store/modules/course/types';
+import { useCourseStore } from '@/store/modules/course';
+
+const courses = ref<CourseInfo[]>();
+const courseStore = useCourseStore();
+
+onLoad(() => {
+  const storeCourses = courseStore.getAllCourses;
+  courses.value = storeCourses;
+});
+
+watch(() => courseStore.courses, (newValue: any, oldValue: any) => {
+  courses.value = newValue;
+  console.log(`Count changed from ${oldValue} to ${newValue}`);
+});
+
 const pushCreateCoursePage = () => {
   uni.navigateTo({ url: '/pages/create-course/index' });
+};
+
+const goSchedulePage = (course: {
+  course_id?: number;
+  course_name?: string;
+  course_duration?: number;
+  course_cost?: number;
+  course_type?: string;
+}) => {
+  uni.navigateTo({
+    url: `/pages/schedule-course/index?course=${encodeURIComponent(JSON.stringify(course))}`,
+  });
 };
 </script>
 

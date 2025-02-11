@@ -44,6 +44,12 @@
       "style": {
         "navigationBarTitleText": "新增课程"
       }
+    },
+    {
+      "path": "pages/schedule-course/index",
+      "style": {
+        "navigationBarTitleText": "课程详情"
+      }
     }
   ],
   "subPackages": [
