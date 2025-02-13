@@ -39,9 +39,18 @@ onLoad(() => {
   courses.value = storeCourses;
 });
 
-watch(() => courseStore.courses, (newValue: any, oldValue: any) => {
-  courses.value = newValue;
-  console.log(`Count changed from ${oldValue} to ${newValue}`);
+const unsubscribe = courseStore.$subscribe((mutation: any, state: any) => {
+  if (mutation.storeId === 'course') {
+    courses.value = state.courses;
+    console.log(`courses edit changed from ${JSON.stringify(courses.value)}`);
+  }
+  console.log('State changed:', state);
+  console.log('Mutation details:', mutation);
+});
+
+// // 组件卸载时取消监听
+onUnmounted(() => {
+  unsubscribe();
 });
 
 const pushCreateCoursePage = () => {
@@ -49,7 +58,7 @@ const pushCreateCoursePage = () => {
 };
 
 const goSchedulePage = (course: {
-  course_id?: number;
+  course_id?: string;
   course_name?: string;
   course_duration?: number;
   course_cost?: number;

@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "course_name": {
+      "type": "string",
+      "description": "课程名称"
+    },
+    "course_duration": {
+      "type": "integer",
+      "description": "课程时长"
+    },
+    "course_cost": {
+      "type": "number",
+      "description": "课程费用"
+    },
+    "course_type": {
+      "type": "string",
+      "description": "课程类型"
+    }
+  },
+  "required": ["course_name", "course_duration", "course_cost", "course_type"]
+}

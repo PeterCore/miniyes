@@ -22,7 +22,7 @@
             </view>
           </button>
           <view class="w-10rpx" />
-          <button class="custom-button-deleted" @click="deleteCourse">
+          <button class="custom-button-deleted" @click="deleteCurrentCourse">
             <view class="button-content">
               <u-icon name="close-circle" color="#fe9831" />
               <text class="button-text-deleted">
@@ -41,8 +41,9 @@
 
 <script setup lang="ts">
 import type { CourseInfo } from '@/store/modules/course/types';
-import { useCourseStore } from '@/store/modules/course';
+import { deleteCourse } from '@/api/cloud_api';
 
+import { useCourseStore } from '@/store/modules/course';
 import { ref } from 'vue';
 
 const show = ref(false);
@@ -50,7 +51,7 @@ const title = ref('提示');
 const content = ref('确定删除吗?');
 const courseStore = useCourseStore();
 
-const courseDetail = ref<CourseInfo>({ course_cost: 80, course_id: 0, course_name: ' ', course_duration: 20, course_type: '文化' });
+const courseDetail = ref<CourseInfo>({ course_cost: 80, course_id: '0', course_name: '', course_duration: 20, course_type: '文化' });
 // const course: CourseInfo = {} as CourseInfo;
 
 // onLoad 获取传递的参数
@@ -79,8 +80,10 @@ const unsubscribe = courseStore.$subscribe((_mutation: any, _state: any) => {
   if (_mutation.storeId === 'course') {
     const courses = _state.courses;
     const info = courseDetail.value;
-    const courseIndex = courses.findIndex((el: { course_id: any }) => el.course_id === info.course_id);
-    courseDetail.value = courses[courseIndex];
+    const courseIndex = courses.findIndex((el: { course_id: string }) => el.course_id === info.course_id);
+    if (courseIndex !== undefined && courseIndex >= 0) {
+      courseDetail.value = courses[courseIndex];
+    }
     console.log(`courses edit changed from ${JSON.stringify(info)}`);
   }
   console.log('State changed:', _state);
@@ -98,8 +101,21 @@ const editCourse = () => {
   });
 };
 
-const confirm = () => {
+const confirm = async () => {
   show.value = false;
+  const courseId = courseDetail.value.course_id ?? '0';
+  uni.showLoading({ title: '删除中' });
+  const response = await deleteCourse(courseId);
+  uni.hideLoading();
+  if (response.success) {
+    courseStore.removeCourse(courseId);
+    uni.navigateBack({
+      delta: 1,
+    });
+  }
+  else {
+    uni.$u.toast(`${response.message}`);
+  }
 };
 
 const cancel = () => {
@@ -109,12 +125,8 @@ const scheduleCourse = () => {
 
 };
 
-const deleteCourse = () => {
+const deleteCurrentCourse = () => {
   show.value = true;
-  courseStore.removeCourse(courseDetail.value.course_id ?? 0);
-  uni.navigateBack({
-    delta: 1,
-  });
 };
 </script>
 

@@ -96,6 +96,7 @@
 
 <script setup lang="ts">
 import type { CourseInfo } from '@/store/modules/course/types';
+import { createCourse, updateCourse } from '@/api/cloud_api';
 import { useCourseStore } from '@/store/modules/course';
 import { reactive, ref } from 'vue';
 
@@ -107,7 +108,7 @@ const courseType = ref('文化');
 const courseName = ref('');
 const showPicker = ref(false);
 const disabled = ref(false);
-let courseId: number = 0;
+let courseId: string = '0';
 const columns = reactive([['文化', '体育', '音乐']]);
 const increased = () => {
   // +
@@ -123,13 +124,7 @@ onLoad((query: any) => {
     duration.value = courseInfo.course_duration ?? 20;
     courseType.value = courseInfo.course_type ?? '文化';
     courseName.value = courseInfo.course_name ?? '英语';
-    courseId = courseInfo.course_id ?? 0;
-  }
-  else {
-    const courseList = courseStore.courses;
-    if (courseList !== undefined && courseList.length > 0) {
-      courseId = courseList.length;
-    }
+    courseId = courseInfo.course_id ?? '0';
   }
 });
 
@@ -138,16 +133,55 @@ const edit_cnyValue = (e: any) => {
   const _cny = Number.isNaN(Number(inputValue)) ? 0 : Number(inputValue);
   cnyValue.value = _cny;
 };
+const createNewCourse = async () => {
+  const response = await createCourse(courseName.value, duration.value, cnyValue.value, courseType.value);
+  uni.hideLoading();
+  if (response.success) {
+    const newCourse = {
+      course_id: `${response.course_id}`,
+      course_name: courseName.value,
+      course_duration: duration.value,
+      course_cost: cnyValue.value,
+      course_type: courseType.value,
+    };
+    courseStore.commit(newCourse);
+    uni.$u.toast(`${response.message}`);
+    uni.navigateBack({
+      delta: 1, // 返回到首页
+    });
+    // message.value = '课程更新成功';
+  }
+  else {
+    uni.$u.toast(`${response.message}`);
+    // message.value = `更新失败: ${response.message}`;
+  }
+};
 
-// export interface CourseState {
-//   course_id?: number;
-//   course_name?: string;
-//   course_duration?: number;
-//   course_cost?: number;
-//   course_type?: string;
-// }
+const updateOldCourse = async () => {
+  const response = await updateCourse(courseId, courseName.value, duration.value, cnyValue.value, courseType.value);
+  uni.hideLoading();
+  if (response.success) {
+    const newCourse = {
+      course_id: `${courseId}`,
+      course_name: courseName.value,
+      course_duration: duration.value,
+      course_cost: cnyValue.value,
+      course_type: courseType.value,
+    };
+    courseStore.commit(newCourse);
+    uni.$u.toast(`${response.message}`);
+    uni.navigateBack({
+      delta: 1, // 返回到首页
+    });
+    // message.value = '课程更新成功';
+  }
+  else {
+    uni.$u.toast(`${response.message}`);
+    // message.value = `更新失败: ${response.message}`;
+  }
+};
 
-const submit = () => {
+const submit = async () => {
   if (courseName.value.trim().length < 1) {
     uni.showToast({
       title: '课程名称为空',
@@ -155,22 +189,25 @@ const submit = () => {
     });
     return;
   }
+  const isExist = courseStore.existCourse(courseName.value.trim());
+  if (isExist === true) {
+    uni.showToast({
+      title: '已存在',
+      icon: 'error',
+    });
+    return;
+  }
   uni.showLoading({ title: '提交中' });
+  if (courseId === '0') {
+    await createNewCourse();
+  }
+  else {
+    await updateOldCourse();
+  }
   disabled.value = true;
+  // uni.hideLoading();
 
-  const newCourse = {
-    course_id: courseId,
-    course_name: courseName.value,
-    course_duration: duration.value,
-    course_cost: cnyValue.value,
-    course_type: courseType.value,
-  };
-  courseStore.commit(newCourse);
-  uni.hideLoading();
-
-  uni.navigateBack({
-    delta: 1, // 返回到首页
-  }); // const courses = courseStore.getAllCourses;
+  // const courses = courseStore.getAllCourses;
   // console.log(`----${JSON.stringify(courses)}---`);
 
   // console.log(`-------${courses?.toString()}`);
