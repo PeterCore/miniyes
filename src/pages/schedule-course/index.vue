@@ -50,14 +50,15 @@ const title = ref('提示');
 const content = ref('确定删除吗?');
 const courseStore = useCourseStore();
 
-const courseDetail = ref<CourseInfo>({ course_cost: 80, course_id: 0, course_name: '', course_duration: 20, course_type: '文化' });
+const courseDetail = ref<CourseInfo>({ course_cost: 80, course_id: 0, course_name: ' ', course_duration: 20, course_type: '文化' });
 // const course: CourseInfo = {} as CourseInfo;
 
 // onLoad 获取传递的参数
 onLoad((query: any) => {
   const courseParam = decodeURIComponent(query.course);
+  console.log(`--------${courseParam}-------`);
   courseDetail.value = JSON.parse(courseParam); // 解析传递的对象
-  console.log(courseDetail.value);
+  // console.log(courseDetail.value);
 });
 
 // watch(() => courseStore.courses, (newValue: any, oldValue: any) => {
@@ -65,12 +66,25 @@ onLoad((query: any) => {
 //   console.log(`Count edit changed from ${oldValue} to ${newValue}`);
 // });
 
-const unsubscribe = courseStore.$subscribe((mutation: any, state: any) => {
-  const course = courseStore.courses;
-  if (course !== undefined && course.length > 0) {
-    courseDetail.value = course[courseDetail.value.course_id ?? 1];
+// watchEffect(() => {
+//   const courses = courseStore.courses;
+//   console.log(`courses edit changed from ${JSON.stringify(courses)}`);
+
+//   // if (course !== undefined && course.length > 0) {
+//   //   courseDetail.value = course[courseDetail.value.course_id ?? 1];
+//   // }
+// });
+
+const unsubscribe = courseStore.$subscribe((_mutation: any, _state: any) => {
+  if (_mutation.storeId === 'course') {
+    const courses = _state.courses;
+    const info = courseDetail.value;
+    const courseIndex = courses.findIndex((el: { course_id: any }) => el.course_id === info.course_id);
+    courseDetail.value = courses[courseIndex];
+    console.log(`courses edit changed from ${JSON.stringify(info)}`);
   }
-  console.log(`Count is now: ${courseStore}`);
+  console.log('State changed:', _state);
+  console.log('Mutation details:', _mutation);
 });
 
 // 组件卸载时取消监听
