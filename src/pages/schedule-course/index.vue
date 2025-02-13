@@ -60,6 +60,24 @@ onLoad((query: any) => {
   console.log(courseDetail.value);
 });
 
+// watch(() => courseStore.courses, (newValue: any, oldValue: any) => {
+//   courseDetail.value = newValue;
+//   console.log(`Count edit changed from ${oldValue} to ${newValue}`);
+// });
+
+const unsubscribe = courseStore.$subscribe((mutation: any, state: any) => {
+  const course = courseStore.courses;
+  if (course !== undefined && course.length > 0) {
+    courseDetail.value = course[courseDetail.value.course_id ?? 1];
+  }
+  console.log(`Count is now: ${courseStore}`);
+});
+
+// 组件卸载时取消监听
+onUnmounted(() => {
+  unsubscribe();
+});
+
 const editCourse = () => {
   uni.navigateTo({
     url: `/pages/create-course/index?course=${encodeURIComponent(JSON.stringify(courseDetail.value))}`,
@@ -79,7 +97,7 @@ const scheduleCourse = () => {
 
 const deleteCourse = () => {
   show.value = true;
-  courseStore.removeCourseWithName(courseDetail.value.course_name ?? '');
+  courseStore.removeCourse(courseDetail.value.course_id ?? 0);
   uni.navigateBack({
     delta: 1,
   });

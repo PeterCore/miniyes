@@ -6,6 +6,19 @@ export const useCourseStore = defineStore('course', {
     courses: [], // 初始化为空的课程列表
   }),
   actions: {
+
+    commit(course: CourseInfo) {
+      const courseIndex = this.courses?.findIndex(el => el.course_id === course.course_id);
+      if (courseIndex !== undefined && courseIndex >= 0) {
+        this.courses![courseIndex] = course; // 更新课程数据
+      }
+      else {
+        const id = this.courses?.length;
+        course.course_id = id;
+        this.courses?.push(course);
+      }
+    },
+
     // 添加课程
     addCourse(course: CourseInfo) {
       this.courses?.push(course); // 向课程列表中添加新课程

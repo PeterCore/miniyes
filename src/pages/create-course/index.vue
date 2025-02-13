@@ -107,7 +107,7 @@ const courseType = ref('文化');
 const courseName = ref('');
 const showPicker = ref(false);
 const disabled = ref(false);
-
+let courseId: number = 0;
 const columns = reactive([['文化', '体育', '音乐']]);
 const increased = () => {
   // +
@@ -123,6 +123,13 @@ onLoad((query: any) => {
     duration.value = courseInfo.course_duration ?? 20;
     courseType.value = courseInfo.course_type ?? '文化';
     courseName.value = courseInfo.course_name ?? '英语';
+    courseId = courseInfo.course_id ?? 0;
+  }
+  else {
+    const courseList = courseStore.courses;
+    if (courseList !== undefined && courseList.length > 0) {
+      courseId = courseList.length;
+    }
   }
 });
 
@@ -141,16 +148,26 @@ const edit_cnyValue = (e: any) => {
 // }
 
 const submit = () => {
+  if (courseName.value.trim().length < 1) {
+    uni.showToast({
+      title: '课程名称为空',
+      icon: 'error',
+    });
+    return;
+  }
   uni.showLoading({ title: '提交中' });
   disabled.value = true;
+
   const newCourse = {
+    course_id: courseId,
     course_name: courseName.value,
     course_duration: duration.value,
     course_cost: cnyValue.value,
     course_type: courseType.value,
   };
-  courseStore.addCourse(newCourse);
+  courseStore.commit(newCourse);
   uni.hideLoading();
+
   uni.navigateBack({
     delta: 1, // 返回到首页
   }); // const courses = courseStore.getAllCourses;
