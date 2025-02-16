@@ -50,6 +50,12 @@
       "style": {
         "navigationBarTitleText": "课程详情"
       }
+    },
+    {
+      "path": "pages/teacher/index",
+      "style": {
+        "navigationBarTitleText": "教师管理"
+      }
     }
   ],
   "subPackages": [
@@ -114,9 +120,9 @@
     ]
   },
   "globalStyle": {
-    "navigationBarTextStyle": "black",
+    "navigationBarTextStyle": "white",
     "navigationBarTitleText": "uni-app",
-    "navigationBarBackgroundColor": "#F8F8F8",
+    "navigationBarBackgroundColor": "#1db147",
     "backgroundColor": "#F8F8F8"
   }
 }

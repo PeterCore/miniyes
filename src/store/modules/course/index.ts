@@ -1,7 +1,7 @@
 import type { CourseInfo, CoursesState } from './types';
 import { defineStore } from 'pinia';
 
-export const useCourseStore = defineStore('course', {
+const useCourseStore = defineStore('course', {
   state: (): CoursesState => ({
     courses: [], // 初始化为空的课程列表
   }),
@@ -53,9 +53,10 @@ export const useCourseStore = defineStore('course', {
     // 获取所有课程
     getAllCourses: state => state.courses,
     // 获取特定课程
-    getCourseById: state => (courseId: number) => {
+    getCourseById: state => (courseId: string) => {
       return state.courses?.find(course => course.course_id === courseId);
     },
   },
   persist: true,
 });
+export default useCourseStore;

@@ -28,12 +28,12 @@
     </view> -->
 
     <view class="mt-20rpx bg-white">
-      <u-cell-group>
-        <u-cell icon="file-text" title="课程管理" is-link url="pages/course-manager/index" />
-        <u-cell icon="man-add" title="添加学生" is-link />
-        <!-- <u-cell icon="coupon" title="卡券" is-link />
+      <u-cell icon="file-text" title="课程管理" is-link url="pages/course-manager/index" />
+      <u-cell icon="man-add" title="学生管理" is-link url="pages/student-manager/index" />
+      <u-cell icon="plus-people-fill" title="教师管理" is-link url="pages/teacher/index" />
+
+      <!-- <u-cell icon="coupon" title="卡券" is-link />
         <u-cell icon="heart" title="关注" is-link /> -->
-      </u-cell-group>
     </view>
 
     <view class="mt-20rpx bg-white">
