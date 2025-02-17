@@ -18,6 +18,7 @@ exports.main = async (event, context) => {
   if (course_duration) updateData.course_duration = course_duration;
   if (course_cost) updateData.course_cost = course_cost;
   if (course_type) updateData.course_type = course_type;
+  updateData.update_time = new Date(); // 更新时自动设置更新时间
 
   try {
     // 更新指定课程

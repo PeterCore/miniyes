@@ -8,7 +8,7 @@
         <text class="title">
           学员列表
         </text>
-        <button class="add-button" @click="addStudent">
+        <button class="add-button" @tap="addStudent">
           + 新增
         </button>
       </view>
@@ -57,7 +57,7 @@ const members: Member[] = [
 ];
 
 const addStudent = () => {
-
+  uni.navigateTo({ url: '/pages/add-student/index' });
 };
 
 // 搜索查询

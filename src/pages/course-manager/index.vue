@@ -29,12 +29,13 @@
 
 <script setup lang="ts">
 import type { CourseInfo } from '@/store/modules/course/types';
-import { useCourseStore } from '@/store/modules/course';
+import { useCourseStore } from '@/store/index';
 
 const courses = ref<CourseInfo[]>();
 const courseStore = useCourseStore();
 
 onLoad(() => {
+  courseStore.getAllcourseList();
   const storeCourses = courseStore.getAllCourses;
   courses.value = storeCourses;
 });

@@ -41,9 +41,7 @@
 
 <script setup lang="ts">
 import type { CourseInfo } from '@/store/modules/course/types';
-import { deleteCourse } from '@/api/cloud_api';
-
-import { useCourseStore } from '@/store/modules/course';
+import { useCourseStore } from '@/store/index';
 import { ref } from 'vue';
 
 const show = ref(false);
@@ -105,16 +103,13 @@ const confirm = async () => {
   show.value = false;
   const courseId = courseDetail.value.course_id ?? '0';
   uni.showLoading({ title: '删除中' });
-  const response = await deleteCourse(courseId);
+  const res = await courseStore.removeCourse(courseId);
   uni.hideLoading();
-  if (response.success) {
-    courseStore.removeCourse(courseId);
+  uni.$u.toast(res[0]);
+  if (res[1]) {
     uni.navigateBack({
       delta: 1,
     });
-  }
-  else {
-    uni.$u.toast(`${response.message}`);
   }
 };
 

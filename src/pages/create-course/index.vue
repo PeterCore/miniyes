@@ -96,8 +96,10 @@
 
 <script setup lang="ts">
 import type { CourseInfo } from '@/store/modules/course/types';
-import { createCourse, updateCourse } from '@/api/cloud_api';
-import { useCourseStore } from '@/store/modules/course';
+import createCourse from '@/api/cloud_api/index';
+import updateCourse from '@/api/cloud_api/index';
+
+import { useCourseStore } from '@/store/index';
 import { reactive, ref } from 'vue';
 
 const courseStore = useCourseStore();
@@ -133,95 +135,47 @@ const edit_cnyValue = (e: any) => {
   const _cny = Number.isNaN(Number(inputValue)) ? 0 : Number(inputValue);
   cnyValue.value = _cny;
 };
-const createNewCourse = async () => {
-  const response = await createCourse(courseName.value, duration.value, cnyValue.value, courseType.value);
-  uni.hideLoading();
-  if (response.success) {
-    const newCourse = {
-      course_id: `${response.course_id}`,
-      course_name: courseName.value,
-      course_duration: duration.value,
-      course_cost: cnyValue.value,
-      course_type: courseType.value,
-    };
-    courseStore.commit(newCourse);
-    uni.$u.toast(`${response.message}`);
-    uni.navigateBack({
-      delta: 1, // 返回到首页
-    });
-    // message.value = '课程更新成功';
-  }
-  else {
-    uni.$u.toast(`${response.message}`);
-    // message.value = `更新失败: ${response.message}`;
-  }
-};
-
-const updateOldCourse = async () => {
-  const response = await updateCourse(courseId, courseName.value, duration.value, cnyValue.value, courseType.value);
-  uni.hideLoading();
-  if (response.success) {
-    const newCourse = {
-      course_id: `${courseId}`,
-      course_name: courseName.value,
-      course_duration: duration.value,
-      course_cost: cnyValue.value,
-      course_type: courseType.value,
-    };
-    courseStore.commit(newCourse);
-    uni.$u.toast(`${response.message}`);
-    uni.navigateBack({
-      delta: 1, // 返回到首页
-    });
-    // message.value = '课程更新成功';
-  }
-  else {
-    uni.$u.toast(`${response.message}`);
-    // message.value = `更新失败: ${response.message}`;
-  }
-};
-
 const submit = async () => {
+  disabled.value = true;
+  const isEdit = courseId !== '0';
   if (courseName.value.trim().length < 1) {
     uni.showToast({
       title: '课程名称为空',
       icon: 'error',
     });
+    disabled.value = false;
     return;
   }
-  const isExist = courseStore.existCourse(courseName.value.trim());
-  if (isExist === true) {
-    uni.showToast({
-      title: '已存在',
-      icon: 'error',
-    });
-    return;
+  if (!isEdit) {
+    const isExist = courseStore.existCourse(courseName.value.trim());
+    if (isExist === true) {
+      uni.showToast({
+        title: '已存在',
+        icon: 'error',
+      });
+      disabled.value = false;
+      return;
+    }
   }
+
   uni.showLoading({ title: '提交中' });
-  if (courseId === '0') {
-    await createNewCourse();
+  const courseInfo = {
+    course_id: `${courseId}`,
+    course_name: courseName.value,
+    course_duration: duration.value,
+    course_cost: cnyValue.value,
+    course_type: courseType.value,
+  };
+  const res = await courseStore.commit(courseInfo, isEdit);
+  uni.hideLoading();
+  uni.$u.toast(res[0]);
+  disabled.value = false;
+  if (res[1]) {
+    uni.navigateBack({
+      delta: 1,
+    });
   }
-  else {
-    await updateOldCourse();
-  }
-  disabled.value = true;
-  // uni.hideLoading();
-
-  // const courses = courseStore.getAllCourses;
-  // console.log(`----${JSON.stringify(courses)}---`);
-
-  // console.log(`-------${courses?.toString()}`);
 };
-
-function goListPages() {
-  // const pages = getCurrentPages();
-  uni.navigateBack({
-    delta: 1, // 返回到首页
-  });
-  // uni.switchTab({
-  //   url: '/pages/tab/list/index',
-  // });
-}
 
 const pickCourses = () => {
   showPicker.value = true;

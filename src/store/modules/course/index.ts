@@ -1,4 +1,5 @@
 import type { CourseInfo, CoursesState } from './types';
+import { CourseApi } from '@/api';
 import { defineStore } from 'pinia';
 
 const useCourseStore = defineStore('course', {
@@ -6,13 +7,29 @@ const useCourseStore = defineStore('course', {
     courses: [], // 初始化为空的课程列表
   }),
   actions: {
-    commit(course: CourseInfo) {
-      const courseIndex = this.courses?.findIndex(el => el.course_id === course.course_id);
-      if (courseIndex !== undefined && courseIndex >= 0) {
-        this.courses![courseIndex] = course; // 更新课程数据
+    async getAllcourseList() {
+      const response = await CourseApi.getCourses(1, 10);
+      if (response?.success) {
+        this.courses = response.data ?? [];
+      }
+      console.log(response);
+    },
+
+    async commit(course: CourseInfo, isEdit: boolean) {
+      if (isEdit) {
+        const response = await CourseApi.updateCourse(course.course_id ?? '0', course.course_name, course.course_duration ?? 0, course.course_cost ?? 0, course.course_type ?? '文化');
+        if (response.success) {
+          this.updateCourse(course);
+        }
+        return [response.message, response.success];
       }
       else {
-        this.courses?.push(course);
+        const response = await CourseApi.createCourse(course.course_name, course.course_duration ?? 0, course.course_cost ?? 0, course.course_type ?? '文化');
+        if (response.success) {
+          course.course_id = `${response.course_id}`;
+          this.addCourse(course);
+        }
+        return [response.message, response.success];
       }
     },
     // 添加课程
@@ -20,15 +37,20 @@ const useCourseStore = defineStore('course', {
       this.courses?.push(course); // 向课程列表中添加新课程
     },
     // 删除课程
-    removeCourse(courseId: string) {
-      try {
-        this.courses = this.courses?.filter(el => (el.course_id ?? '0') !== courseId); // 根据 ID 删除课程
-      }
-      catch (error) {
-        if (error instanceof Error) {
-          console.log(`error is ${error}`);
+    async removeCourse(courseId: string) {
+      const response = await CourseApi.deleteCourse(courseId);
+      if (response.success) {
+        try {
+          this.courses = this.courses?.filter(el => (el.course_id ?? '0') !== courseId); // 根据 ID 删除课程
+        }
+        catch (error) {
+          if (error instanceof Error) {
+            console.log(`error is ${error}`);
+          }
+          return [`${error}`, response.success];
         }
       }
+      return [response.message, response.success];
     },
     existCourse(courseName: string) {
       let isExist = false;

@@ -56,6 +56,12 @@
       "style": {
         "navigationBarTitleText": "教师管理"
       }
+    },
+    {
+      "path": "pages/add-student/index",
+      "style": {
+        "navigationBarTitleText": "编辑学生"
+      }
     }
   ],
   "subPackages": [
