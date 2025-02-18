@@ -70,7 +70,7 @@ const onChange = (e: any) => {
 };
 
 const onAddTeachers = () => {
-
+  uni.navigateTo({ url: '/pages/edit-teacher/index' });
 };
 </script>
 
