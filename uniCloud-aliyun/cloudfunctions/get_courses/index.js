@@ -1,7 +1,7 @@
 const db = uniCloud.database();
 const coursesCollection = db.collection('course');
 
-exports.main = async (event, context) => {
+exports.main = async (event, _) => {
   const { page = 1, pageSize = 10 } = event; // 设置默认分页参数
 
   try {

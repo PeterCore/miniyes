@@ -19,7 +19,7 @@
       <view v-for="(group, letter) in groupedMembers" :key="letter" class="group">
         <u-cell-group :title="letter" border="false">
           <view v-for="(item, index) in group" :key="index" class="bg-white">
-            <u-cell :title="`${item.name}`" :label="`${item.wechatStatus}`">
+            <u-cell :title="`${item.name}`" :label="`${item.remark}`">
               <template #icon>
                 <view class="circle-container">
                   <text class="circle-text">
@@ -36,45 +36,68 @@
 </template>
 
 <script setup lang="ts">
+import type { StudentInfo } from '@/store/modules/student/types';
+import { useStudentStore } from '@/store/index';
 import { pinyin } from 'pinyin-pro';
 import { computed, ref } from 'vue';
 
-interface Member {
-  id: number;
-  name: string;
-  avatar: string;
-  wechatStatus: string;
-}
+const useStore = useStudentStore();
+
+const students = ref<StudentInfo[]>([]);
+
+onLoad((_: any) => {
+  uni.showLoading({
+    title: '加载中',
+    mask: true,
+  });
+  useStore.getAllStudentList().then((_: any) => {
+    uni.hideLoading();
+    const value = useStore.getAllStudents;
+    students.value = value;
+  });
+});
 
 // 假数据
-const members: Member[] = [
-  { id: 1, name: '理工', avatar: '', wechatStatus: '未绑定' },
-  { id: 2, name: '明年', avatar: '', wechatStatus: '未绑定' },
-  { id: 3, name: '你啊', avatar: '', wechatStatus: '未绑定' },
-  { id: 4, name: '匿名丽丽', avatar: '', wechatStatus: '未绑定' },
-  { id: 5, name: '李涛', avatar: '', wechatStatus: '已绑定' },
-  { id: 6, name: '林俊杰', avatar: '', wechatStatus: '未绑定' },
-];
+// const members: Member[] = [
+//   { id: 1, name: '理工', avatar: '', wechatStatus: '未绑定' },
+//   { id: 2, name: '明年', avatar: '', wechatStatus: '未绑定' },
+//   { id: 3, name: '你啊', avatar: '', wechatStatus: '未绑定' },
+//   { id: 4, name: '匿名丽丽', avatar: '', wechatStatus: '未绑定' },
+//   { id: 5, name: '李涛', avatar: '', wechatStatus: '已绑定' },
+//   { id: 6, name: '林俊杰', avatar: '', wechatStatus: '未绑定' },
+// ];
 
 const addStudent = () => {
   uni.navigateTo({ url: '/pages/add-student/index' });
 };
 
+const unsubscribe = useStore.$subscribe((_mutation: any, _state: any) => {
+  if (_mutation.storeId === 'student') {
+    const value = useStore.getAllStudents;
+    students.value = value;
+  }
+  console.log('State changed:', _state);
+  console.log('Mutation details:', _mutation);
+});
+
+// 组件卸载时取消监听
+onUnmounted(() => {
+  unsubscribe();
+});
+
 // 搜索查询
 const searchQuery = ref('');
-const filteredMembers = computed(() => {
-  return members.filter(member =>
-    member.name.includes(searchQuery.value)
-    || member.wechatStatus.includes(searchQuery.value),
-  );
-});
+// const filteredMembers = computed(() => {
+//   return students.value.filter(member =>
+//     member.name.includes(searchQuery.value),
+//   );
+// });
 
 // 按首字母分组排序
 const groupedMembers = computed(() => {
-  const groups: Record<string, Member[]> = {};
-
+  const groups: Record<string, StudentInfo[]> = {};
   // 按字母分组
-  filteredMembers.value.forEach((member: Member) => {
+  students.value.forEach((member: StudentInfo) => {
     const firstLetter = pinyin(member.name.charAt(0), { pattern: 'first' }).toUpperCase();
     console.log(`首字母 ${firstLetter} ---- ${firstLetter}`);
     if (!groups[firstLetter]) {
@@ -87,7 +110,7 @@ const groupedMembers = computed(() => {
   const sortedGroups = Object.keys(groups).sort().reduce((acc, letter) => {
     acc[letter] = groups[letter];
     return acc;
-  }, {} as Record<string, Member[]>);
+  }, {} as Record<string, StudentInfo[]>);
 
   return sortedGroups;
 });
@@ -123,7 +146,7 @@ const onSearch = () => {
 }
 
 .add-button {
-  @apply hover:bg-green-600 h-[60rpx] w-[180rpx] flex-shrink-0 flex-row mr-[10rpx] items-center text-#3ed268 border-green-300 justify-center rounded-l-6rpx text-25rpx bg-white
+  @apply h-[60rpx] w-[180rpx] flex-shrink-0 flex-row mr-[10rpx] items-center text-#3ed268 border-green-300 justify-center rounded-l-6rpx text-25rpx bg-white
 }
 
 .group-container {

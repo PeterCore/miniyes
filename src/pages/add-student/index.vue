@@ -26,7 +26,7 @@
       </view>
       <view class="w-full">
         <input
-          v-model="studentName"
+          v-model="remark"
           placeholder="备注真名或其他备注(为了识别)"
           placeholderStyle="font-size:9 color: #ededed"
           border="surround"
@@ -77,6 +77,8 @@
 <script setup lang="ts">
 import type { StudentInfo } from '@/store/modules/student/types';
 import { useStudentStore } from '@/store/index';
+import { pinyin } from 'pinyin-pro';
+
 import { ref } from 'vue';
 
 const studentName = ref('');
@@ -84,7 +86,7 @@ const remark = ref('');
 const isOpen = ref(false);
 const genders = ref(1);
 const phone = ref('');
-const disabled = ref(true);
+const disabled = ref(false);
 let stdId = '0';
 const useStore = useStudentStore();
 
@@ -104,8 +106,8 @@ const on_change_name = (e: any) => {
   studentName.value = e.detail.value;
 };
 
-const submit = () => {
-  disabled.value = false;
+const submit = async () => {
+  disabled.value = true;
   if (studentName.value.trim().length < 1) {
     uni.showToast({
       title: '名字为空',
@@ -120,22 +122,30 @@ const submit = () => {
     });
     return;
   }
-  // student_id?: string;
-  // name: string;
-  // remark: string;
-  // spell_name: string;
-  // genders: number;
-  // phone?: string;
-
-  // const newStudent = {
-  //     student_id: `${response.course_id}`,
-  //     name: courseName.value,
-  //     remark: duration.value,
-  //     spell_name: cnyValue.value,
-  //     phone: courseType.value,
-  //     genders:
-  //   };
-  disabled.value = true;
+  uni.showLoading({
+    title: '加载中',
+    mask: true,
+  });
+  // name, remark, spell_name, genders, phone
+  const isEdit = stdId !== '0';
+  const spellName = pinyin(studentName.value, { toneType: 'none' });
+  const newStudent = {
+    student_id: isEdit ? `${stdId}` : null,
+    name: studentName.value,
+    remark: remark.value,
+    spell_name: spellName,
+    genders: genders.value,
+    phone: phone.value,
+  };
+  const res = await useStore.commit(newStudent, isEdit);
+  uni.hideLoading();
+  uni.$u.toast(res[1]);
+  disabled.value = false;
+  if (res[0]) {
+    uni.navigateBack({
+      delta: 1,
+    });
+  }
 };
 
 const genders_change = (e: any) => {

@@ -35,9 +35,15 @@ const courses = ref<CourseInfo[]>();
 const courseStore = useCourseStore();
 
 onLoad(() => {
-  courseStore.getAllcourseList();
-  const storeCourses = courseStore.getAllCourses;
-  courses.value = storeCourses;
+  uni.showLoading({
+    title: '加载中',
+    mask: true,
+  });
+  courseStore.getAllcourseList().then((_: any) => {
+    uni.hideLoading();
+    const storeCourses = courseStore.getAllCourses;
+    courses.value = storeCourses;
+  });
 });
 
 const unsubscribe = courseStore.$subscribe((mutation: any, state: any) => {

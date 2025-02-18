@@ -7,8 +7,17 @@ const useStudentStore = defineStore('student', {
     students: [], // 初始化为空的学生列表
   }),
   actions: {
+
+    async getAllStudentList() {
+      const response = await StudentApi.getStudentList();
+      if (response?.success) {
+        this.students = response.data ?? [];
+      }
+      console.log(response);
+    },
+
     async commit(student: StudentInfo, isEdit: boolean) {
-      if (isEdit) {
+      if (!isEdit) {
         const response = await StudentApi.addStudent(student);
         if (response?.success) {
           student.student_id = response.id;

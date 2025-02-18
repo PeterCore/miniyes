@@ -1,5 +1,5 @@
 export interface StudentInfo {
-  student_id?: string;
+  student_id?: string | null;
   name: string;
   remark: string;
   spell_name: string;

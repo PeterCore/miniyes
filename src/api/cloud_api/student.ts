@@ -105,3 +105,34 @@ export const deleteStudent = async (studentId: string) => {
     }
   }
 };
+
+// studentService.ts
+interface GetStudentListResponse {
+  success: boolean;
+  code: number;
+  message: string;
+  data: StudentInfo[];
+  total: number;
+}
+
+export const getStudentList = async (): Promise<GetStudentListResponse> => {
+  try {
+    // 调用云函数获取所有学生列表
+    const res = await uniCloud.callFunction({
+      name: 'get_students', // 云函数名
+      data: {}, // 无分页参数，获取所有学生
+    });
+
+    return res.result;
+  }
+  catch (error) {
+    console.error('调用云函数失败', error);
+    return {
+      success: false,
+      code: 500,
+      message: '获取学生列表失败',
+      data: [],
+      total: 0,
+    };
+  }
+};
