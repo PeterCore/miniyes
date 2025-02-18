@@ -1,8 +1,14 @@
 <template>
   <view class="page-container">
     <!-- 搜索框 -->
-    <view class="h-[160rpx] flex-grow flex-col items-start bg-white p-20rpx">
-      <u-search v-model="searchQuery" placeholder="搜索姓名、手机号" @confirm="onSearch" />
+    <view class="h-[180rpx] flex-grow flex-col items-start bg-white p-20rpx">
+      <view class="search-container">
+        <u-search v-model="searchQuery" :focus="focus" shape="square" :show-action="false" placeholder="搜索姓名、手机号" @change="onChange" />
+        <button class="cancel-button" @tap="onCancel">
+          取消
+        </button>
+      </view>
+
       <view class="header-container">
         <view class="line" />
         <text class="title">
@@ -15,21 +21,36 @@
     </view>
 
     <!-- 列表显示 -->
-    <view class="group-container">
-      <view v-for="(group, letter) in groupedMembers" :key="letter" class="group">
-        <u-cell-group :title="letter" border="false">
-          <view v-for="(item, index) in group" :key="index" class="bg-white">
-            <u-cell :title="`${item.name}`" :label="`${item.remark}`">
-              <template #icon>
-                <view class="circle-container">
-                  <text class="circle-text">
-                    {{ item.name.charAt(0) }}
-                  </text>
-                </view>
-              </template>
-            </u-cell>
-          </view>
-        </u-cell-group>
+    <view v-if="searchQuery.length === 0">
+      <view class="group-container">
+        <view v-for="(group, letter) in groupedMembers" :key="letter" class="group">
+          <u-cell-group :title="letter" :border="false">
+            <view v-for="(item, index) in group" :key="index" class="bg-white">
+              <u-cell :title="`${item.name}`" :label="`${item.remark}`">
+                <template #icon>
+                  <view class="circle-container">
+                    <text class="circle-text">
+                      {{ item.name.charAt(0) }}
+                    </text>
+                  </view>
+                </template>
+              </u-cell>
+            </view>
+          </u-cell-group>
+        </view>
+      </view>
+    </view>
+    <view v-else>
+      <view v-for="(item, index) in searchResult" :key="index" class="bg-white">
+        <u-cell :title="`${item.name}`" :label="`${item.remark}`">
+          <template #icon>
+            <view class="circle-container">
+              <text class="circle-text">
+                {{ item.name.charAt(0) }}
+              </text>
+            </view>
+          </template>
+        </u-cell>
       </view>
     </view>
   </view>
@@ -42,9 +63,10 @@ import { pinyin } from 'pinyin-pro';
 import { computed, ref } from 'vue';
 
 const useStore = useStudentStore();
-
+const focus = ref(true);
 const students = ref<StudentInfo[]>([]);
-
+const searchQuery = ref('');
+const searchResult = ref<StudentInfo[]>([]);
 onLoad((_: any) => {
   uni.showLoading({
     title: '加载中',
@@ -57,18 +79,20 @@ onLoad((_: any) => {
   });
 });
 
-// 假数据
-// const members: Member[] = [
-//   { id: 1, name: '理工', avatar: '', wechatStatus: '未绑定' },
-//   { id: 2, name: '明年', avatar: '', wechatStatus: '未绑定' },
-//   { id: 3, name: '你啊', avatar: '', wechatStatus: '未绑定' },
-//   { id: 4, name: '匿名丽丽', avatar: '', wechatStatus: '未绑定' },
-//   { id: 5, name: '李涛', avatar: '', wechatStatus: '已绑定' },
-//   { id: 6, name: '林俊杰', avatar: '', wechatStatus: '未绑定' },
-// ];
+const onCancel = () => {
+  focus.value = false;
+  searchQuery.value = '';
+};
 
 const addStudent = () => {
   uni.navigateTo({ url: '/pages/add-student/index' });
+};
+
+const onChange = (e: any) => {
+  const keyword = e;
+  console.log(`keyword is ${keyword}`);
+  searchResult.value = students.value.filter((e: StudentInfo) =>
+    e.name.includes(keyword) || e.spell_name.includes(keyword));
 };
 
 const unsubscribe = useStore.$subscribe((_mutation: any, _state: any) => {
@@ -86,12 +110,11 @@ onUnmounted(() => {
 });
 
 // 搜索查询
-const searchQuery = ref('');
-// const filteredMembers = computed(() => {
-//   return students.value.filter(member =>
-//     member.name.includes(searchQuery.value),
-//   );
-// });
+const filteredMembers = computed(() => {
+  return students.value.filter((e: StudentInfo) =>
+    e.name.includes(searchQuery.value) || e.spell_name.includes(searchQuery.value),
+  );
+});
 
 // 按首字母分组排序
 const groupedMembers = computed(() => {
@@ -136,6 +159,9 @@ const onSearch = () => {
 .header-container {
   @apply h-90rpx flex justify-between items-center p-[10rpx] bg-white;
 }
+.search-container {
+  @apply h-90rpx flex justify-between items-center  bg-white;
+}
 
 .line {
   @apply w-[4rpx] h-[30rpx] mr-30rpx bg-orange-500; /* 设置竖线的宽度、高度和颜色 */
@@ -147,6 +173,10 @@ const onSearch = () => {
 
 .add-button {
   @apply h-[60rpx] w-[180rpx] flex-shrink-0 flex-row mr-[10rpx] items-center text-#3ed268 border-green-300 justify-center rounded-l-6rpx text-25rpx bg-white
+}
+
+.cancel-button {
+  @apply h-[60rpx] w-[120rpx] flex-shrink-0 flex-row mx-[10rpx] items-center text-#3ed268 border-green-300 justify-center rounded-l-6rpx text-25rpx bg-white
 }
 
 .group-container {

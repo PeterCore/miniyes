@@ -5,6 +5,7 @@ export interface StudentInfo {
   spell_name: string;
   genders: number;
   phone?: string;
+  class_timetable: string[];
 }
 
 export interface StudentState {

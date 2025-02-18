@@ -2,7 +2,7 @@ const db = uniCloud.database();
 const studentsCollection = db.collection('student'); // 云数据库集合名为 'students'
 
 exports.main = async (event, context) => {
-  const { name, remark, spell_name, genders, phone } = event;
+  const { name, remark, spell_name, genders, phone, class_timetable } = event;
 
   // 校验必填字段
   if (!name || !remark || !spell_name || genders === undefined) {
@@ -22,6 +22,7 @@ exports.main = async (event, context) => {
       spell_name,
       genders,
       phone: phone || '', // 可选字段
+      class_timetable: class_timetable || [],
       create_time: currentTime, // 创建时间
       update_time: currentTime,
     });

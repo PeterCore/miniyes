@@ -10,7 +10,20 @@ const useCourseStore = defineStore('course', {
     async getAllcourseList() {
       const response = await CourseApi.getCourses(1, 10);
       if (response?.success) {
-        this.courses = response.data ?? [];
+        const result = response.data;
+        if (result === undefined) {
+          this.courses = [];
+        }
+        else {
+          const courseList: CourseInfo[] = result.map((item: any) => ({
+            course_id: item._id,
+            course_cost: item.course_cost,
+            course_duration: item.course_duration,
+            course_name: item.course_name,
+            course_type: item.course_type,
+          }));
+          this.courses = courseList;
+        }
       }
       console.log(response);
     },

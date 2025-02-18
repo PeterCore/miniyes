@@ -127,6 +127,7 @@ onLoad((query: any) => {
     courseType.value = courseInfo.course_type ?? '文化';
     courseName.value = courseInfo.course_name ?? '英语';
     courseId = courseInfo.course_id ?? '0';
+    console.log(`courseId is ${courseId}`);
   }
 });
 

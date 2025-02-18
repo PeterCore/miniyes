@@ -2,7 +2,7 @@ const db = uniCloud.database();
 const studentsCollection = db.collection('student');
 
 exports.main = async (event, context) => {
-  const { student_id, name, remark, spell_name, genders, phone } = event;
+  const { student_id, name, remark, spell_name, genders, phone, class_timetable } = event;
 
   if (!student_id) {
     return {
@@ -19,6 +19,7 @@ exports.main = async (event, context) => {
   if (spell_name) updateData.spell_name = spell_name;
   if (genders !== undefined) updateData.genders = genders;
   if (phone) updateData.phone = phone;
+  if (class_timetable) updateData.class_timetable = class_timetable;
   updateData.update_time = new Date(); // 更新时自动设置更新时间
 
   try {

@@ -61,7 +61,7 @@
       <view class="w-full">
         <input
           v-model="phone"
-          placeholder="联系电话(必填)"
+          placeholder="联系电话(手机号码必填)"
           placeholderStyle="font-size:9 color: #ededed"
           border="surround"
           @change="on_phone"
@@ -87,7 +87,11 @@ const isOpen = ref(false);
 const genders = ref(1);
 const phone = ref('');
 const disabled = ref(false);
+const isValidPhone = ref<boolean | null>(null);
+const phoneRegEx = /^1[3-9]\d{9}$/;
+
 let stdId = '0';
+let class_timetable: string[] = [];
 const useStore = useStudentStore();
 
 onLoad((query: any) => {
@@ -99,6 +103,7 @@ onLoad((query: any) => {
     remark.value = stdInfo.remark;
     phone.value = stdInfo.phone ?? '';
     stdId = stdInfo.student_id ?? '0';
+    class_timetable = stdInfo.class_timetable;
   }
 });
 
@@ -113,6 +118,7 @@ const submit = async () => {
       title: '名字为空',
       icon: 'error',
     });
+    disabled.value = false;
     return;
   }
   else if (remark.value.trim().length < 1) {
@@ -120,6 +126,16 @@ const submit = async () => {
       title: '备注为空',
       icon: 'error',
     });
+    disabled.value = false;
+    return;
+  }
+  isValidPhone.value = phoneRegEx.test(phone.value);
+  if (isValidPhone.value !== true) {
+    uni.showToast({
+      title: '联系电话错误',
+      icon: 'error',
+    });
+    disabled.value = false;
     return;
   }
   uni.showLoading({
@@ -136,6 +152,7 @@ const submit = async () => {
     spell_name: spellName,
     genders: genders.value,
     phone: phone.value,
+    class_timetable,
   };
   const res = await useStore.commit(newStudent, isEdit);
   uni.hideLoading();
@@ -157,7 +174,10 @@ const on_remark = (e: any) => {
 };
 
 const on_phone = (e: any) => {
-  phone.value = e.detail.value;
+  if (e.detail.value.length > 11) {
+    phone.value = e.detail.value.substring(0, 11);
+  }
+  console.log(`phone is ${phone.value}`);
 };
 </script>
 

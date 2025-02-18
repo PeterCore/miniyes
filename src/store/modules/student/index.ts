@@ -7,12 +7,34 @@ const useStudentStore = defineStore('student', {
     students: [], // 初始化为空的学生列表
   }),
   actions: {
-
+    // student_id?: string | null;
+    // name: string;
+    // remark: string;
+    // spell_name: string;
+    // genders: number;
+    // phone?: string;
+    // class_timetable: string[];
     async getAllStudentList() {
       const response = await StudentApi.getStudentList();
       if (response?.success) {
-        this.students = response.data ?? [];
+        const result = response.data;
+        if (result === undefined) {
+          this.students = [];
+        }
+        else {
+          const studentList: StudentInfo[] = result.map((item: any) => ({
+            student_id: item._id,
+            remark: item.remark,
+            spell_name: item.spell_name,
+            genders: item.genders,
+            name: item.name,
+            phone: item.phone,
+            class_timetable: item.class_timetable,
+          }));
+          this.students = studentList;
+        }
       }
+      console.log(`students is ${JSON.stringify(this.students)}`);
       console.log(response);
     },
 
