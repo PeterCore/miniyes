@@ -56,23 +56,15 @@ const courseDetail = ref<CourseInfo>({ course_cost: 80, course_id: '0', course_n
 onLoad((query: any) => {
   const courseParam = decodeURIComponent(query.course);
   console.log(`--------${courseParam}-------`);
-  courseDetail.value = JSON.parse(courseParam); // 解析传递的对象
-  // console.log(courseDetail.value);
+  const jsonData = JSON.parse(courseParam); //
+  const courseId = jsonData.id;
+  if (courseId) {
+    const course = courseStore.getCourseById(courseId);
+    if (course) {
+      courseDetail.value = course;
+    }
+  }
 });
-
-// watch(() => courseStore.courses, (newValue: any, oldValue: any) => {
-//   courseDetail.value = newValue;
-//   console.log(`Count edit changed from ${oldValue} to ${newValue}`);
-// });
-
-// watchEffect(() => {
-//   const courses = courseStore.courses;
-//   console.log(`courses edit changed from ${JSON.stringify(courses)}`);
-
-//   // if (course !== undefined && course.length > 0) {
-//   //   courseDetail.value = course[courseDetail.value.course_id ?? 1];
-//   // }
-// });
 
 const unsubscribe = courseStore.$subscribe((_mutation: any, _state: any) => {
   if (_mutation.storeId === 'course') {

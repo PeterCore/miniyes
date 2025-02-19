@@ -82,6 +82,8 @@
 </template>
 
 <script setup lang="ts">
+import { useTeacherStore } from '@/store/index';
+import { pinyin } from 'pinyin-pro';
 import { reactive, ref } from 'vue';
 
 const teacherName = ref('');
@@ -95,19 +97,37 @@ const phoneRegEx = /^1[3-9]\d{9}$/;
 const columns = reactive([['校长', '老师', '教务']]);
 const role = ref('');
 const showPicker = ref(false);
-
+const useStore = useTeacherStore();
+let isEdit = false;
+let teacher_id = '0';
+let class_timetable: string[] = [];
 onLoad((query: any) => {
   console.log(`teacher query is ${query}`);
-  // if (query.course !== undefined) {
-  //   // const stdParam = decodeURIComponent(query.std);
-  //   // const stdInfo = JSON.parse(stdParam) as StudentInfo;
-  //   // teacherName.value = stdInfo.name;
-  //   // genders.value = stdInfo.genders;
-  //   // remark.value = stdInfo.remark;
-  //   // phone.value = stdInfo.phone ?? '';
-  //   // stdId = stdInfo.student_id ?? '0';
-  //   // class_timetable = stdInfo.class_timetable;
-  // }
+  if (query.course !== undefined) {
+    const courseParam = decodeURIComponent(query.course);
+    const jsonData = JSON.parse(courseParam); //
+    const teacherId = jsonData.id;
+    if (teacherId) {
+      teacher_id = teacherId;
+      isEdit = true;
+      const teacherInfo = useStore.getTeacherById(teacherId);
+      if (teacherInfo) {
+        teacherName.value = teacherInfo.name;
+        remark.value = teacherInfo.remark;
+        genders.value = teacherInfo.genders;
+        phone.value = teacherInfo.phone ?? '';
+        role.value = teacherInfo.role;
+        class_timetable = teacherInfo.class_timetable;
+      }
+    }
+    // const stdInfo = JSON.parse(stdParam) as StudentInfo;
+    // teacherName.value = stdInfo.name;
+    // genders.value = stdInfo.genders;
+    // remark.value = stdInfo.remark;
+    // phone.value = stdInfo.phone ?? '';
+    // stdId = stdInfo.student_id ?? '0';
+    // class_timetable = stdInfo.class_timetable;
+  }
   if (role.value.length < 1) {
     role.value = '请选择角色(必填)';
   }
@@ -160,6 +180,19 @@ const submit = async () => {
     title: '加载中',
     mask: true,
   });
+  const spellName = pinyin(teacherName.value, { toneType: 'none' });
+
+  const teacherInfo = {
+    teacher_id: `${teacher_id}`,
+    name: teacherName.value,
+    remark: remark.value,
+    genders: genders.value,
+    phone: phone.value,
+    role: role.value,
+    spell_name: spellName,
+    class_timetable,
+  };
+  useStore.commit(teacherInfo, isEdit);
   // name, remark, spell_name, genders, phone
   // const isEdit = stdId !== '0';
   // const spellName = pinyin(studentName.value, { toneType: 'none' });

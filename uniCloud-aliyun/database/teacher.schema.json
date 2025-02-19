@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "教师姓名",
+      "minLength": 1
+    },
+    "remark": {
+      "type": "string",
+      "description": "教师备注",
+      "minLength": 1
+    },
+    "spell_name": {
+      "type": "string",
+      "description": "教师姓名的拼音",
+      "minLength": 1
+    },
+    "genders": {
+      "type": "integer",
+      "enum": [0, 1],
+      "description": "教师性别，0 为女性，1 为男性"
+    },
+    "phone": {
+      "type": "string",
+      "description": "教师的电话号码",
+      "minLength": 11,
+      "maxLength": 11
+    },
+    "role": {
+      "type": "string",
+      "description": "教师的角色，如班主任、科任教师等",
+      "minLength": 1
+    },
+    "class_timetable": {
+      "type": "array",
+      "description": "教师的课表",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "minItems": 0,
+      "uniqueItems": true
+    }
+  },
+  "required": ["name", "remark", "spell_name", "genders", "role", "class_timetable"],
+  "additionalProperties": false
+}

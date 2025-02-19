@@ -16,7 +16,7 @@
     </view>
     <view v-for="(item, index) in courses" :key="index">
       <view class="bg-white">
-        <u-cell :title="`${item.course_name}` " is-link @click="goSchedulePage(item)" />
+        <u-cell :title="`${item.course_name}` " is-link @click="goSchedulePage(item.course_id ?? '0')" />
       </view>
     </view>
     <view v-if="(courses || []).length > 0">
@@ -64,22 +64,21 @@ const pushCreateCoursePage = () => {
   uni.navigateTo({ url: '/pages/create-course/index' });
 };
 
-const goSchedulePage = (course: {
-  course_id?: string;
-  course_name?: string;
-  course_duration?: number;
-  course_cost?: number;
-  course_type?: string;
-}) => {
+const goSchedulePage = (courseId: string) => {
   uni.navigateTo({
-    url: `/pages/schedule-course/index?course=${encodeURIComponent(JSON.stringify(course))}`,
+    url: `/pages/schedule-course/index?course=${encodeURIComponent(JSON.stringify({
+      id: courseId, // 必须字段      // 添加其他需要传递的非敏感字段...
+    }))}`,
   });
 };
 </script>
 
+<!-- $u-primary: #21d59d;
+$u-primary-dark: #76a3fd;
+$u-success: #3ed268; -->
 <style lang="scss" scoped>
 .add-course-btn {
-  @apply flex-grow flex-shrink-0 flex-row mr-[10rpx] items-center  justify-center h-[60rpx]  rounded-lg text-25rpx bg-green-500 border-none  text-white  hover:bg-green-600;
+  @apply h-[60rpx] w-[180rpx] text-[24rpx] text-white flex-shrink-0 flex-row mr-[10rpx] bg-[#21d59d] items-center transition-all duration-300 hover:bg-[#21d59d] hover:shadow-[0_0_20px_##3ed268] hover:scale-110 active:bg-[#3ed268] active:scale-95 active:shadow-none
 }
 </style>
 
