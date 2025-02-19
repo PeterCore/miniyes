@@ -9,6 +9,12 @@
   },
   "pages": [
     {
+      "path": "pages/tab/timetable/index",
+      "style": {
+        "navigationBarTitleText": "首页"
+      }
+    },
+    {
       "path": "pages/tab/home/index",
       "style": {
         "navigationBarTitleText": "首页"
@@ -115,7 +121,7 @@
       {
         "iconPath": "static/images/tabbar/icon_home.png",
         "selectedIconPath": "static/images/tabbar/icon_home_selected.png",
-        "pagePath": "pages/tab/home/index",
+        "pagePath": "pages/tab/timetable/index",
         "text": "首页"
       },
       {

@@ -39,6 +39,6 @@
       "uniqueItems": true
     }
   },
-  "required": ["name", "remark", "spell_name", "genders", "courses"],
+  "required": ["name", "remark", "spell_name", "genders", "phone", "class_timetable"],
   "additionalProperties": false
 }

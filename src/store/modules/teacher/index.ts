@@ -29,23 +29,23 @@ const userTeacherStore = defineStore('teacher', {
     async commit(teacher: TeacherInfo, isEdit: boolean) {
       if (!isEdit) {
         try {
+          console.log('创建教师:', JSON.stringify(teacher));
           const teacherId = await TeacherApi.createTeacher(teacher);
           console.log('创建成功，ID:', teacherId);
           teacher.teacher_id = teacherId;
           this.addTeacher(teacher);
-          return [true, '创建成功'];
         }
         catch (error) {
           if (error instanceof Error) {
             return [false, error.message];
           }
         }
+        return [true, '创建成功'];
       }
       else {
         try {
           await TeacherApi.updateTeacher(teacher.teacher_id ?? '0', teacher);
           this.updateTeacher(teacher);
-          return [true, '更新成功'];
         }
         catch (error) {
           if (error instanceof Error) {
@@ -53,6 +53,7 @@ const userTeacherStore = defineStore('teacher', {
             return [true, error.message];
           }
         }
+        return [true, '更新成功'];
       }
     },
     // 添加老师

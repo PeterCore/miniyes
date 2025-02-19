@@ -4,7 +4,7 @@
     <view class="h-[180rpx] flex-grow flex-col items-start bg-white p-20rpx">
       <view class="search-container">
         <u-search v-model="searchQuery" :focus="focus" shape="square" :show-action="false" placeholder="搜索姓名、手机号" @change="onChange" />
-        <button class="cancel-button" @tap="onCancel">
+        <button class="cancel-button" @onclick="onCancel">
           取消
         </button>
       </view>
@@ -14,7 +14,7 @@
         <text class="title">
           学员列表
         </text>
-        <button class="add-button" @tap="addStudent">
+        <button class="add-button" @onclick="addStudent">
           + 新增
         </button>
       </view>
@@ -63,7 +63,7 @@ import { pinyin } from 'pinyin-pro';
 import { computed, ref } from 'vue';
 
 const useStore = useStudentStore();
-const focus = ref(true);
+const focus = ref(false);
 const students = ref<StudentInfo[]>([]);
 const searchQuery = ref('');
 const searchResult = ref<StudentInfo[]>([]);

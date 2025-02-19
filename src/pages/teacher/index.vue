@@ -21,7 +21,7 @@
     </view>
 
     <!-- 列表显示 -->
-    <!-- <view v-if="searchQuery.length === 0">
+    <view v-if="searchQuery.length === 0">
       <view class="group-container">
         <view v-for="(group, letter) in groupedMembers" :key="letter" class="group">
           <u-cell-group :title="letter" border="false">
@@ -52,13 +52,46 @@
           </template>
         </u-cell>
       </view>
-    </view> -->
+    </view>
   </view>
 </template>
 
 <script setup lang="ts">
+import type { TeacherInfo } from '@/store/modules/teacher/types';
+import { useTeacherStore } from '@/store/index';
+import { pinyin } from 'pinyin-pro';
+
 const searchQuery = ref('');
+const useStore = useTeacherStore();
 const focus = ref(false);
+const teachers = ref<TeacherInfo[]>([]);
+const searchResult = ref<TeacherInfo[]>([]);
+
+onLoad((_: any) => {
+  uni.showLoading({
+    title: '加载中',
+    mask: true,
+  });
+  useStore.getTeachers().then((_: any) => {
+    uni.hideLoading();
+    const value = useStore.getAllTeachers;
+    teachers.value = value;
+  });
+});
+
+const unsubscribe = useStore.$subscribe((_mutation: any, _state: any) => {
+  if (_mutation.storeId === 'student') {
+    const value = useStore.getAllTeachers;
+    teachers.value = value;
+  }
+  console.log('State changed:', _state);
+  console.log('Mutation details:', _mutation);
+});
+
+// 组件卸载时取消监听
+onUnmounted(() => {
+  unsubscribe();
+});
 
 const onCancel = () => {
   focus.value = false;
@@ -66,8 +99,38 @@ const onCancel = () => {
 };
 
 const onChange = (e: any) => {
-  console.log(`e is ${e}`);
+  const keyword = e;
+  console.log(`keyword is ${keyword}`);
+  searchResult.value = teachers.value.filter((e: TeacherInfo) =>
+    e.name.includes(keyword) || e.spell_name.includes(keyword));
 };
+
+const filteredMembers = computed(() => {
+  return teachers.value.filter((e: TeacherInfo) =>
+    e.name.includes(searchQuery.value) || e.spell_name.includes(searchQuery.value),
+  );
+});
+
+// 按首字母分组排序
+const groupedMembers = computed(() => {
+  const groups: Record<string, TeacherInfo[]> = {};
+  // 按字母分组
+  teachers.value.forEach((member: TeacherInfo) => {
+    const firstLetter = pinyin(member.name.charAt(0), { pattern: 'first' }).toUpperCase();
+    if (!groups[firstLetter]) {
+      groups[firstLetter] = [];
+    }
+    groups[firstLetter].push(member);
+  });
+
+  // 返回按字母顺序排列的分组
+  const sortedGroups = Object.keys(groups).sort().reduce((acc, letter) => {
+    acc[letter] = groups[letter];
+    return acc;
+  }, {} as Record<string, TeacherInfo[]>);
+
+  return sortedGroups;
+});
 
 const onAddTeachers = () => {
   uni.navigateTo({ url: '/pages/edit-teacher/index' });

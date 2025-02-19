@@ -37,7 +37,7 @@
     <view
       class="mt-[10rpx] w-full flex flex-row items-center justify-start border-b border-gray-200 bg-white py-3"
     >
-      <view class="mx-[20rpx] w-[100rpx] items-center text-30 color-#333">
+      <view class="mx-[30rpx] w-[110rpx] items-center text-30 color-#333">
         性别
       </view>
       <view class="w-full" />
@@ -102,10 +102,10 @@ let isEdit = false;
 let teacher_id = '0';
 let class_timetable: string[] = [];
 onLoad((query: any) => {
-  console.log(`teacher query is ${query}`);
-  if (query.course !== undefined) {
-    const courseParam = decodeURIComponent(query.course);
-    const jsonData = JSON.parse(courseParam); //
+  console.log(`teacher query is ${query.info}`);
+  if (query.info !== undefined) {
+    const infoParam = decodeURIComponent(query.info);
+    const jsonData = JSON.parse(infoParam); //
     const teacherId = jsonData.id;
     if (teacherId) {
       teacher_id = teacherId;
@@ -186,25 +186,21 @@ const submit = async () => {
     teacher_id: `${teacher_id}`,
     name: teacherName.value,
     remark: remark.value,
+    spell_name: spellName,
     genders: genders.value,
     phone: phone.value,
     role: role.value,
-    spell_name: spellName,
     class_timetable,
   };
-  useStore.commit(teacherInfo, isEdit);
-  // name, remark, spell_name, genders, phone
-  // const isEdit = stdId !== '0';
-  // const spellName = pinyin(studentName.value, { toneType: 'none' });
-  // const newStudent = {
-  //   student_id: isEdit ? `${stdId}` : null,
-  //   name: studentName.value,
-  //   remark: remark.value,
-  //   spell_name: spellName,
-  //   genders: genders.value,
-  //   phone: phone.value,
-  //   class_timetable,
-  // };
+  const res = await useStore.commit(teacherInfo, isEdit);
+  if (res[0] === true) {
+    uni.navigateBack({
+      delta: 1,
+    });
+  }
+  uni.$u.toast(res[1]);
+  uni.hideLoading();
+  disabled.value = false;
 };
 
 const genders_change = (e: any) => {

@@ -2,7 +2,7 @@
 const db = uniCloud.database();
 const coursesCollection = db.collection('course');
 
-exports.main = async (event, context) => {
+exports.main = async (event, _context) => {
   const { course_name, course_duration, course_cost, course_type } = event;
 
   // 检查必填字段

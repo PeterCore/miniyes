@@ -1,18 +1,19 @@
 import type { UniCloudResponse } from '@/api/types/uniCloud';
+import type { TeacherInfo } from '@/store/modules/teacher/types';
 
 // 教师类型定义
-export interface Teacher {
-  _id?: string;
-  name: string;
-  remark: string;
-  spell_name: string;
-  genders: number;
-  phone?: string;
-  role: string;
-  class_timetable: string[];
-  create_time?: Date;
-  update_time?: Date;
-}
+// export interface Teacher {
+//   _id?: string;
+//   name: string;
+//   remark: string;
+//   spell_name: string;
+//   genders: number;
+//   phone?: string;
+//   role: string;
+//   class_timetable: string[];
+//   create_time?: Date;
+//   update_time?: Date;
+// }
 
 // 接口响应类型
 interface ApiResponse<T = any> {
@@ -34,7 +35,7 @@ class TeacherService {
    * 获取教师列表
    * @param params 分页参数
    */
-  async getTeachers(params?: PaginationParams): Promise<Teacher[]> {
+  async getTeachers(params?: PaginationParams): Promise<TeacherInfo[]> {
     try {
       const res = await uniCloud.callFunction({
         name: 'get_teachers',
@@ -42,7 +43,7 @@ class TeacherService {
           page: params?.page || 1,
           pageSize: params?.pageSize || 20,
         },
-      }) as UniCloudResponse<ApiResponse<Teacher[]>>;
+      }) as UniCloudResponse<ApiResponse<TeacherInfo[]>>;
 
       if (res.result.success) {
         return res.result.data || [];
@@ -59,14 +60,14 @@ class TeacherService {
    * 获取教师详情
    * @param teacherId 教师ID
    */
-  async getTeacherById(teacherId: string): Promise<Teacher> {
+  async getTeacherById(teacherId: string): Promise<TeacherInfo> {
     if (!teacherId) throw new Error('教师ID不能为空');
 
     try {
       const res = await uniCloud.callFunction({
         name: 'get_teacher_by_id',
         data: { teacher_id: teacherId },
-      }) as UniCloudResponse<ApiResponse<Teacher>>;
+      }) as UniCloudResponse<ApiResponse<TeacherInfo>>;
 
       if (res.result.success) {
         return res.result.data!;
@@ -83,11 +84,12 @@ class TeacherService {
    * 创建教师
    * @param teacherData 教师数据
    */
-  async createTeacher(teacherData: Omit<Teacher, '_id' | 'create_time' | 'update_time'>): Promise<string> {
+  async createTeacher(teacherData: TeacherInfo): Promise<string> {
     try {
+      const { teacher_id, create_time, update_time, ...rest } = teacherData;
       const res = await uniCloud.callFunction({
         name: 'add_teacher',
-        data: teacherData,
+        data: rest,
       }) as UniCloudResponse<ApiResponse<{ teacher_id: string }>>;
 
       if (res.result.success) {
@@ -108,16 +110,17 @@ class TeacherService {
    */
   async updateTeacher(
     teacherId: string,
-    updateData: Partial<Omit<Teacher, '_id' | 'create_time'>>,
+    updateData: TeacherInfo,
   ): Promise<void> {
     if (!teacherId) throw new Error('教师ID不能为空');
+    const { teacher_id, ...rest } = updateData;
 
     try {
       const res = await uniCloud.callFunction({
         name: 'update_teacher',
         data: {
           teacher_id: teacherId,
-          ...updateData,
+          ...rest,
         },
       }) as UniCloudResponse<ApiResponse>;
 

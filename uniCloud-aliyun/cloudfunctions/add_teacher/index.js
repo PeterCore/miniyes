@@ -2,16 +2,33 @@ const db = uniCloud.database();
 const teachersCollection = db.collection('teacher');
 
 exports.main = async (event, context) => {
-  const requiredFields = ['name', 'remark', 'spell_name', 'genders', 'role', 'class_timetable'];
-  const missingFields = requiredFields.filter(field => !event[field]);
+  const { name, remark, spell_name, genders, role, phone, class_timetable } = event;
 
-  if (missingFields.length > 0) {
+  // 校验必填字段
+  if (!name || !remark || !spell_name || !role || !phone || genders === undefined) {
     return {
       success: false,
       code: 400,
-      message: `缺少必填字段：${missingFields.join(', ')}`,
+      message: '缺少必要的老师信息',
     };
   }
+  // const requiredFields = ['name', 'remark', 'spell_name', 'genders', 'role', 'phone', 'class_timetable'];
+  // const missingFields = requiredFields.filter((field) => {
+  //   if (field === 'genders') {
+  //     if (event[field] === undefined) {
+  //       return true;
+  //     }
+  //   }
+  //   return !event[field];
+  // });
+  // console.log('missingFields', missingFields);
+  // if (missingFields.length > 0) {
+  //   return {
+  //     success: false,
+  //     code: 400,
+  //     message: `缺少必填字段：${missingFields.join(', ')}`,
+  //   };
+  // }
 
   if (event.phone && event.phone.length !== 11) {
     return {

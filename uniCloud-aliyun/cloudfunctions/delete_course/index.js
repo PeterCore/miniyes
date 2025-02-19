@@ -2,7 +2,7 @@
 const db = uniCloud.database();
 const coursesCollection = db.collection('course');
 
-exports.main = async (event, context) => {
+exports.main = async (event, _context) => {
   const { course_id } = event;
 
   if (!course_id) {
