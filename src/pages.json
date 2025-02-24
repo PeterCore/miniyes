@@ -74,8 +74,13 @@
       "style": {
         "navigationBarTitleText": "编辑"
       }
+    },
+    {
+      "path": "pages/edit-timetable/index",
+      "style": {
+        "navigationBarTitleText": "编辑"
+      }
     }
-
   ],
   "subPackages": [
     {

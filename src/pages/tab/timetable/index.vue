@@ -7,7 +7,7 @@
         <text class="title">
           排课列表
         </text>
-        <button class="add-button" @onclick="addTimetable">
+        <button class="add-button" @click="onEditTimetable">
           + 新增排课
         </button>
       </view>
@@ -16,8 +16,8 @@
 </template>
 
 <script setup lang="ts">
-const addTimetable = () => {
-  // uni.navigateTo({ url: '/pages/edit-timetable/index' });
+const onEditTimetable = () => {
+  uni.navigateTo({ url: '/pages/edit-timetable/index' });
 };
 </script>
 

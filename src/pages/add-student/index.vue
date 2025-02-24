@@ -95,8 +95,8 @@ let class_timetable: string[] = [];
 const useStore = useStudentStore();
 
 onLoad((query: any) => {
-  if (query.course !== undefined) {
-    const stdParam = decodeURIComponent(query.std);
+  if (query.info !== undefined) {
+    const stdParam = decodeURIComponent(query.info);
     const stdInfo = JSON.parse(stdParam) as StudentInfo;
     studentName.value = stdInfo.name;
     genders.value = stdInfo.genders;

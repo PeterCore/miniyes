@@ -25,7 +25,6 @@ const useCourseStore = defineStore('course', {
           this.courses = courseList;
         }
       }
-      console.log(response);
     },
 
     async commit(course: CourseInfo, isEdit: boolean) {

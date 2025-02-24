@@ -55,7 +55,6 @@ const courseDetail = ref<CourseInfo>({ course_cost: 80, course_id: '0', course_n
 // onLoad 获取传递的参数
 onLoad((query: any) => {
   const courseParam = decodeURIComponent(query.course);
-  console.log(`--------${courseParam}-------`);
   const jsonData = JSON.parse(courseParam); //
   const courseId = jsonData.id;
   if (courseId) {

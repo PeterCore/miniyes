@@ -4,7 +4,7 @@
     <view class="h-[180rpx] flex-grow flex-col items-start bg-white p-20rpx">
       <view class="search-container">
         <u-search v-model="searchQuery" :focus="focus" shape="square" :show-action="false" placeholder="搜索姓名、手机号" @change="onChange" />
-        <button class="cancel-button" @onclick="onCancel">
+        <button class="cancel-button" @click="onCancel">
           取消
         </button>
       </view>
@@ -14,7 +14,7 @@
         <text class="title">
           学员列表
         </text>
-        <button class="add-button" @onclick="addStudent">
+        <button class="add-button" @click="onAddstudent">
           + 新增
         </button>
       </view>
@@ -84,7 +84,8 @@ const onCancel = () => {
   searchQuery.value = '';
 };
 
-const addStudent = () => {
+const onAddstudent = () => {
+  console.log('add student');
   uni.navigateTo({ url: '/pages/add-student/index' });
 };
 
@@ -138,9 +139,9 @@ const groupedMembers = computed(() => {
   return sortedGroups;
 });
 
-const onSearch = () => {
-  console.log('Search executed:', searchQuery.value);
-};
+// const onSearch = () => {
+//   console.log('Search executed:', searchQuery.value);
+// };
 </script>
 
 <style scoped>

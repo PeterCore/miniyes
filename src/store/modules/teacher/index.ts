@@ -29,7 +29,6 @@ const userTeacherStore = defineStore('teacher', {
     async commit(teacher: TeacherInfo, isEdit: boolean) {
       if (!isEdit) {
         try {
-          console.log('创建教师:', JSON.stringify(teacher));
           const teacherId = await TeacherApi.createTeacher(teacher);
           console.log('创建成功，ID:', teacherId);
           teacher.teacher_id = teacherId;
