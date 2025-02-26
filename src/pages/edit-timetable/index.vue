@@ -93,8 +93,8 @@
 <script setup lang="ts">
 import type { CourseInfo } from '@/store/modules/course/types';
 import type { StudentInfo } from '@/store/modules/student/types';
-
-import { useCourseStore, useStudentStore, useTeacherStore } from '@/store/index';
+import { useCourseStore, useStudentStore, useTeacherStore, useTimetableStore } from '@/store/index';
+import { TimetableStatus } from '@/store/modules/classtimetable/types';
 
 const format = 'HH:mm';
 
@@ -117,6 +117,7 @@ const showPickerEndTime = ref(false);
 const useTStore = useTeacherStore();
 const useCStore = useCourseStore();
 const useSStore = useStudentStore();
+const useTTStore = useTimetableStore();
 const showPickerStudent = ref(false);
 const studentList = ref<StudentInfo[]>([]);
 const selectedStudentIds = ref([]);
@@ -143,9 +144,70 @@ const expandTime = () => {
   isExpandTime.value = !isExpandTime.value;
   arrowDirection.value = isExpandTime.value ? 'up' : 'down';
 };
+// timetable_id?: string;
+//   course_id: string;
+//   course_name: string;
+//   status: TimetableStatus;
+//   teacher: {
+//     teacher_id: string;
+//     teacher_name: string;
+//   };
+//   students: Array<{
+//     student_id: string;
+//     student_name: string;
+//   }>;
+//   schedule_time: string;
+//   remark?: string;
+//   create_time: number;
+//   update_time: number;
+const submit = async () => {
+  if (courseType.value.length === 0) {
+    uni.$u.toast('请选择课程');
+    return;
+  }
+  else if (teacher.value.length === 0) {
+    uni.$u.toast('请选择老师');
+    return;
+  }
+  else if (classDate.value.length === 0) {
+    uni.$u.toast('请选择日期');
+    return;
+  }
+  else if (classTime.value.length === 0) {
+    uni.$u.toast('请确定时间');
+    return;
+  }
+  else if (selectedStudentIds.value.length === 0) {
+    uni.$u.toast('请选择学员');
+    return;
+  }
+  disabled.value = true;
 
-const submit = () => {
+  const info = {
+    course_name: courseType.value,
+    course_id: selectedCourseId,
+    status: TimetableStatus.not_started,
+    teacher: {
+      teacher_id: selectedTeacherId,
+      teacher_name: teacher.value,
+    },
+    students: selectedStudentIds.value.map((id: string) => ({
+      student_id: id,
+      student_name: studentList.value.find((item: any) => item.student_id === id)?.name ?? '',
+    })),
+    schedule_time: classTime.value,
+    remark: remark.value,
 
+  };
+  const res = await useTTStore.commit(info, false);
+  disabled.value = false;
+  if (res[0] === true) {
+    uni.$u.toast(res[1]);
+    uni.navigateBack();
+  }
+  else {
+    uni.$u.toast(res[1]);
+  }
 };
 
 type DateTimeColumnType = 'year' | 'month' | 'day' | 'hour' | 'minute';
@@ -201,6 +263,7 @@ watch(startTime, (newStart: string) => {
 
 onLoad((_: any) => {
   const tList = useTStore.getAllTeachers;
+  console.log(JSON.stringify(tList));
   const teacherList = tList.map((item: any) => ({ text: item.name, value: item.teacher_id }));
   teachers.value = [teacherList];
   cList = useCStore.getAllCourses ?? [];
@@ -338,6 +401,7 @@ const confirm = (e: any) => {
     });
   }
   else if (showPickerTeacher.value) {
+    console.log('----teacher', e.value[0]);
     teacher.value = e.value[0].text;
     selectedTeacherId = e.value[0].value; //
   }

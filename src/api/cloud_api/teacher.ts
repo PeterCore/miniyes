@@ -93,6 +93,7 @@ class TeacherService {
       }) as UniCloudResponse<ApiResponse<{ teacher_id: string }>>;
 
       if (res.result.success) {
+        console.log('teacher_id is ', res.result.data!.teacher_id);
         return res.result.data!.teacher_id;
       }
       throw new Error(res.result.message || '创建教师失败');

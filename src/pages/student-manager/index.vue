@@ -122,8 +122,8 @@ const groupedMembers = computed(() => {
   const groups: Record<string, StudentInfo[]> = {};
   // 按字母分组
   students.value.forEach((member: StudentInfo) => {
-    const firstLetter = pinyin(member.name.charAt(0), { pattern: 'first' }).toUpperCase();
-    console.log(`首字母 ${firstLetter} ---- ${firstLetter}`);
+    const firstLetter = pinyin(member.name.charAt(0), { pattern: 'first', toneType: 'none' }).toUpperCase();
+    console.log(`首字母 student ${firstLetter} ---- ${firstLetter}`);
     if (!groups[firstLetter]) {
       groups[firstLetter] = [];
     }
@@ -135,7 +135,7 @@ const groupedMembers = computed(() => {
     acc[letter] = groups[letter];
     return acc;
   }, {} as Record<string, StudentInfo[]>);
-
+  console.log('student sortedGroups', JSON.stringify(sortedGroups));
   return sortedGroups;
 });
 

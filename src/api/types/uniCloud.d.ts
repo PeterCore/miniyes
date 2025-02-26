@@ -1,3 +1,5 @@
+import { TimetableInfo } from '@/store/modules/classtimetable/types';
+
 export declare namespace UniCloud {
   /**
    * 云函数调用基础响应结构
@@ -19,6 +21,23 @@ export declare namespace UniCloud {
   }
 }
 
+// 分页请求参数
+interface GetTimetableParams {
+  /** 当前页码 */
+  page?: number;
+  /** 每页数量 */
+  pageSize?: number;
+  /** 课程名称模糊查询 */
+  courseName?: string;
+  /** 教师ID精确查询 */
+  teacherId?: string;
+  /** 学生ID关联查询 */
+  studentId?: string;
+  /** 开始时间（YYYY-MM-DD） */
+  startTime?: string;
+  /** 结束时间（YYYY-MM-DD） */
+  endTime?: string;
+}
 /**
  * 业务层统一响应格式
  * @template T 业务数据泛型
@@ -34,12 +53,6 @@ interface ApiResponse<T = any> {
   data?: T;
   /** 调试用错误信息 */
   error?: string;
-  /** 分页信息 */
-  pagination?: {
-    total: number;
-    current: number;
-    pageSize: number;
-  };
 }
 
 /**

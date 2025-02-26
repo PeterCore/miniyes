@@ -5,6 +5,7 @@ import { createPersistedState } from 'pinia-plugin-persistedstate';
 
 // 导入子模块
 import useAppStore from './modules/app';
+import useTimetableStore from './modules/classtimetable';
 import useCourseStore from './modules/course';
 import useStudentStore from './modules/student';
 import useTeacherStore from './modules/teacher';
@@ -25,5 +26,5 @@ function setupStore(app: App) {
 }
 
 // 导出模块
-export { useAppStore, useCourseStore, useStudentStore, useTeacherStore, useUserStore };
+export { useAppStore, useCourseStore, useStudentStore, useTeacherStore, useTimetableStore, useUserStore };
 export default setupStore;

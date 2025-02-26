@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "课程的ID",
+      "minLength": 1
+    },
+    "course_name": {
+      "type": "string",
+      "description": "课程名称",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "description": "课程状态",
+      "minLength": 1
+    },
+    "teacher": {
+      "type": "object",
+      "properties": {
+        "teacher_id": {
+          "type": "string",
+          "description": "教师的ID"
+        },
+        "teacher_name": {
+          "type": "string",
+          "description": "教师的姓名"
+        }
+      },
+      "required": ["teacher_id", "teacher_name"]
+    },
+    "students": {
+      "type": "array",
+      "description": "学生列表",
+      "items": {
+        "type": "object",
+        "properties": {
+          "student_id": {
+            "type": "string",
+            "description": "学生的ID"
+          },
+          "student_name": {
+            "type": "string",
+            "description": "学生的姓名"
+          }
+        },
+        "required": ["student_id", "student_name"]
+      },
+      "minItems": 1
+    },
+    "schedule_time": {
+      "type": "string",
+      "description": "课程安排时间",
+      "minLength": 1
+    },
+    "remark": {
+      "type": "string",
+      "description": "备注",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "course_id",
+    "course_name",
+    "status",
+    "teacher",
+    "students",
+    "schedule_time"
+  ],
+  "additionalProperties": false
+}
