@@ -50,7 +50,10 @@ async function createTimetable(event) {
       await studentCollection.where({
         _id: cmd.in(studentIds),
       }).update({
-        class_timetable: cmd.addToSet(timetableRes.id),
+        class_timetable: cmd.addToSet({
+          classtimetable_id: timetableRes.id,
+          pay_status: 'unpaid', // 初始默认状态
+        }),
       });
     }
 
@@ -116,7 +119,7 @@ async function updateTimetable(event) {
     const removedStudents = oldStudentIds.filter(id => !newStudentIds.includes(id));
     if (removedStudents.length > 0) {
       await studentCollection.where({
-        student_id: cmd.in(removedStudents),
+        _id: cmd.in(removedStudents),
       }).update({
         class_timetable: cmd.pull(timetable_id),
       });
@@ -126,7 +129,7 @@ async function updateTimetable(event) {
     const addedStudents = newStudentIds.filter(id => !oldStudentIds.includes(id));
     if (addedStudents.length > 0) {
       await studentCollection.where({
-        student_id: cmd.in(addedStudents),
+        _id: cmd.in(addedStudents),
       }).update({
         class_timetable: cmd.addToSet(timetable_id),
       });
@@ -166,7 +169,7 @@ async function deleteTimetable(event) {
     const studentIds = students.map(s => s.student_id);
     if (studentIds.length > 0) {
       await studentCollection.where({
-        student_id: cmd.in(studentIds),
+        _id: cmd.in(studentIds),
       }).update({
         class_timetable: cmd.pull(timetable_id),
       });
@@ -205,14 +208,14 @@ async function getTimetables(event) {
     // 教师ID精确查询
     if (teacherId) {
       query.where({
-        'teacher.teacher_id': teacherId,
+        'teacher._id': teacherId,
       });
     }
 
     // 学生ID关联查询
     if (studentId) {
       query.where({
-        'students.student_id': studentId,
+        'students._id': studentId,
       });
     }
 

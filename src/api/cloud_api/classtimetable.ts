@@ -34,7 +34,7 @@ class TimetableService {
    */
   async getTimetableList(
     params: GetTimetableParams,
-  ): Promise<ApiResponse> {
+  ): Promise<ApiResponse<TimetableListResponse>> {
     try {
       const res = await uniCloud.callFunction({
         name: 'timetable',
@@ -42,17 +42,18 @@ class TimetableService {
           action: 'list',
           ...params,
         },
-      }) as ApiResponse<TimetableListResponse>;
-      if (res.success) {
+      }) as UniCloudResponse<ApiResponse<TimetableListResponse>>;
+      console.log('获取课程表:', res);
+      if (res.result.success) {
         if (
-          !res?.data?.pagination
-          || !Array.isArray(res.data.list)
+          !res?.result.data?.pagination
+          || !Array.isArray(res.result.data.list)
         ) {
           throw new Error('Invalid response structure');
         }
-        return res;
+        return res.result;
       }
-      throw new Error(res.message || '获取教师列表失败');
+      throw new Error(res.result.message || '获取教师列表失败');
     }
     catch (error) {
       console.error('获取课程表列表失败:', error);

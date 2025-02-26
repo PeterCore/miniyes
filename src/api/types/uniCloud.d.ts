@@ -22,7 +22,7 @@ export declare namespace UniCloud {
 }
 
 // 分页请求参数
-interface GetTimetableParams {
+export interface GetTimetableParams {
   /** 当前页码 */
   page?: number;
   /** 每页数量 */

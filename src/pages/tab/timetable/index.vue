@@ -12,10 +12,89 @@
         </button>
       </view>
     </view>
+    <view v-for="(item, index) in timeTables" :key="index">
+      <up-card :border="false" padding="20rpx 20rpx 10rpx 30rpx" margin="10rpx 20rpx" :title="item.course_name" title-color="#ff7043" :sub-title="item.schedule_time.split(' ')[1]">
+        <template #body>
+          <view class="mb-[20rpx]">
+            <up-line-progress :percentage="0" height="20rpx" active-color="#3ed268" :show-text="true" />
+          </view>
+
+          <view class="flex flex-col gap-[8rpx]">
+            <view class="flex flex-row items-center justify-start">
+              <text class="text-[24rpx] text-[#666]">
+                教师：
+              </text>
+              <text class="text-[24rpx] text-[#ff7043]">
+                {{ item.teacher.teacher_name }}
+              </text>
+            </view>
+            <text class="text-[24rpx] text-[#666]">
+              开始日期：{{ item.schedule_time.split(" ")[0] }}
+            </text>
+            <text class="text-[24rpx] text-[#666]">
+              结束日期：{{ item.schedule_time.split(" ")[0] }}
+            </text>
+            <view class="flex flex-row items-center justify-start">
+              <text class="text-[24rpx] text-[#666]">
+                上课学员：
+              </text>
+              <text class="text-[24rpx] text-[#3ed268]">
+                {{ item.students.map(item => item.student_name).join(',') }}
+              </text>
+            </view>
+          </view>
+          <view />
+        </template>
+      </up-card>
+    </view>
   </view>
 </template>
 
 <script setup lang="ts">
+import type { TimetableInfo } from '@/store/modules/classtimetable/types';
+import { useTimetableStore } from '@/store/index';
+import { ref } from 'vue';
+
+const useStore = useTimetableStore();
+const timeTables = ref<TimetableInfo[]>([]);
+
+const getTimetables = async (page: number, pageSize: number, isRefresh: boolean) => {
+  uni.showLoading({ title: '加载中...' });
+  const params = {
+    page,
+    pageSize,
+  };
+  const res = await useStore.getClassTimetable(params, isRefresh);
+  uni.hideLoading();
+  if (res[0] === true) {
+    uni.$u.toast('加载成功');
+    const value = useStore.getAllTimetable;
+    timeTables.value = value;
+    console.log('timetables is ', timeTables.value);
+  }
+  else {
+    uni.$u.toast(res[1]);
+  }
+};
+
+onLoad((_: any) => {
+  getTimetables(1, 10, true);
+});
+
+const unsubscribe = useStore.$subscribe((_mutation: any, _state: any) => {
+  if (_mutation.storeId === 'classtimetable') {
+    const value = useStore.getAllTimetable;
+    timeTables.value = value;
+  }
+  console.log('State changed:', _state);
+  console.log('Mutation details:', _mutation);
+});
+
+// 组件卸载时取消监听
+onUnmounted(() => {
+  unsubscribe();
+});
+
 const onEditTimetable = () => {
   uni.navigateTo({ url: '/pages/edit-timetable/index' });
 };
@@ -23,7 +102,7 @@ const onEditTimetable = () => {
 
 <style lang="scss" scoped>
 .page-container {
-  @apply bg-#f5f5f5
+  @apply bg-#f5f5f5 h-full w-full flex flex-col
 }
 
 .circle-container {

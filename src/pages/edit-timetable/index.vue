@@ -195,7 +195,7 @@ const submit = async () => {
       student_id: id,
       student_name: studentList.value.find((item: any) => item.student_id === id)?.name ?? '',
     })),
-    schedule_time: classTime.value,
+    schedule_time: `${classDate.value} ${classTime.value}`,
     remark: remark.value,
 
   };
@@ -332,7 +332,7 @@ const onConfirm = () => {
     uni.$u.toast('开始时间不能大于结束时间');
     return;
   }
-  classTime.value = `${startTime.value} - ${endTime.value}`;
+  classTime.value = `${startTime.value}-${endTime.value}`;
   showPickerStudent.value = false;
 };
 
@@ -385,6 +385,14 @@ onUnmounted(() => {
 });
 
 const pickTeachers = () => {
+  console.log('pickTeachers', teachers.value);
+  if (teachers.value[0].length === 0) {
+    uni.$u.toast('请先添加教师');
+    setTimeout(() => {
+      uni.navigateTo({ url: '/pages/edit-teacher/index' });
+    }, 300);
+    return;
+  }
   showPickerTeacher.value = true;
 };
 const on_remark = (e: any) => {

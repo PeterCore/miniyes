@@ -32,7 +32,20 @@
       "type": "array",
       "description": "学生所选课程表",
       "items": {
-        "type": "string"
+        "type": "object",
+        "required": ["classtimetable_id", "pay_status"],
+        "enum": ["unpaid", "paid", "refunded"],
+        "default": "unpaid",
+        "properties": {
+          "class_timetable_id": {
+            "type": "string",
+            "description": "课表ID"
+          },
+          "pay_status": {
+            "type": "string",
+            "description": "支付状态"
+          }
+        }
       },
       "default": [],
       "minItems": 0,

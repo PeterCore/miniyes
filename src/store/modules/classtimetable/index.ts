@@ -11,7 +11,7 @@ const useTimetableStore = defineStore('classtimetable', {
     async getTimetable(params: GetTimetableParams) {
       const res = await TimetableApi.getTimetableList(params);
       if (res.success) {
-        this.timetables = res.data.list;
+        this.timetables = res.data!.list;
       }
       else {
         this.timetables = [];
@@ -48,6 +48,23 @@ const useTimetableStore = defineStore('classtimetable', {
         }
       }
       return [false, '操作失败'];
+    },
+
+    async getClassTimetable(params: GetTimetableParams, isRefresh: boolean) {
+      if (isRefresh) {
+        const res = await TimetableApi.getTimetableList(params);
+        if (res.success) {
+          this.timetables = res.data!.list;
+          return [true, res.message];
+        }
+        else {
+          return [false, res.message];
+        }
+      }
+      else {
+        this.timetables = this.timetables?.slice((params.page! - 1) * params.pageSize!, params.page! * params.pageSize!);
+        return [true, '获取成功'];
+      }
     },
 
     async deleteTimetable(timetableId: string) {
