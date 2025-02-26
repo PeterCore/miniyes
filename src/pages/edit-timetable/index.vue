@@ -370,7 +370,7 @@ const unsubCourseScribe = useCStore.$subscribe((_mutation: any, _state: any) => 
   }
 });
 
-const unsubTeacherScribe = useCStore.$subscribe((_mutation: any, _state: any) => {
+const unsubTeacherScribe = useTStore.$subscribe((_mutation: any, _state: any) => {
   if (_mutation.storeId === 'teacher') {
     const tList = useTStore.getAllTeachers;
     const teacherList = tList.map((item: any) => ({ text: item.name, value: item.teacher_id }));

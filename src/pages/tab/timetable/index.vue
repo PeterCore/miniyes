@@ -13,7 +13,7 @@
       </view>
     </view>
     <view v-for="(item, index) in timeTables" :key="index">
-      <up-card :border="false" padding="20rpx 20rpx 10rpx 30rpx" margin="10rpx 20rpx" :title="item.course_name" title-color="#ff7043" :sub-title="item.schedule_time.split(' ')[1]">
+      <up-card :border="false" padding="20rpx 20rpx 20rpx" margin="10rpx 20rpx" :title="item.course_name" title-color="#ff7043" :sub-title="item.schedule_time.split(' ')[1]" @body-click="onSelected">
         <template #body>
           <view class="mb-[20rpx]">
             <up-line-progress :percentage="0" height="20rpx" active-color="#3ed268" :show-text="true" />
@@ -45,6 +45,18 @@
           </view>
           <view />
         </template>
+        <template #foot>
+          <view class="flex flex-row items-center justify-between">
+            <text class="bg-[#fe9831] p-[5rpx] text-[24rpx] text-[#fff]">
+              {{ item.status === TimetableStatus.not_started ? '未开始' : '已结束' }}
+            </text>
+            <view v-if="item.status === TimetableStatus.not_started">
+              <button class="button" @click="onStartCourse">
+                开 始
+              </button>
+            </view>
+          </view>
+        </template>
       </up-card>
     </view>
   </view>
@@ -53,10 +65,43 @@
 <script setup lang="ts">
 import type { TimetableInfo } from '@/store/modules/classtimetable/types';
 import { useTimetableStore } from '@/store/index';
+import { TimetableStatus } from '@/store/modules/classtimetable/types';
 import { ref } from 'vue';
 
 const useStore = useTimetableStore();
 const timeTables = ref<TimetableInfo[]>([]);
+
+const onSelected = () => {
+  console.log('selected');
+};
+
+const onStartCourse = () => {
+  console.log('start course');
+};
+
+const sortByTimeDesc = (items: TimetableInfo[]): TimetableInfo[] => {
+  console.log('-----sort-----');
+  return [...items].sort((a, b) => {
+    // 将时间转换为可比较的格式
+    const parseTime = (timeStr: string) => {
+      console.log(`old datetime is ${timeStr}`);
+      const [datePart, timePart] = timeStr.split(' ');
+      const [year, month, day] = datePart.split('-').map(Number);
+      const [startTime, _] = timePart.split('-');
+      const [hour, minute] = startTime.split(':').map(Number);
+      const dateTime = new Date(year, month - 1, day, hour, minute).getTime();
+      return dateTime;
+    };
+
+    try {
+      return parseTime(b.schedule_time) - parseTime(a.schedule_time);
+    }
+    catch (error) {
+      console.error('时间格式错误:', error);
+      return 0;
+    }
+  });
+};
 
 const getTimetables = async (page: number, pageSize: number, isRefresh: boolean) => {
   uni.showLoading({ title: '加载中...' });
@@ -84,7 +129,7 @@ onLoad((_: any) => {
 const unsubscribe = useStore.$subscribe((_mutation: any, _state: any) => {
   if (_mutation.storeId === 'classtimetable') {
     const value = useStore.getAllTimetable;
-    timeTables.value = value;
+    timeTables.value = sortByTimeDesc(value);
   }
   console.log('State changed:', _state);
   console.log('Mutation details:', _mutation);
@@ -130,6 +175,9 @@ const onEditTimetable = () => {
 
 .add-button {
   @apply h-[60rpx] w-[180rpx] text-[24rpx] text-white flex-shrink-0 flex-row mr-[10rpx] bg-[#21d59d] items-center transition-all duration-300 hover:bg-[#21d59d] hover:shadow-[0_0_20px_##3ed268] hover:scale-110 active:bg-[#3ed268] active:scale-95 active:shadow-none
+}
+.button {
+  @apply h-[50rpx] w-[120rpx] text-[21rpx] text-white flex-shrink-0 flex-row mr-[10rpx] bg-[#21d59d] items-center transition-all duration-300 hover:bg-[#21d59d] hover:shadow-[0_0_20px_##3ed268] hover:scale-110 active:bg-[#3ed268] active:scale-95 active:shadow-none
 }
 
 .cancel-button {
