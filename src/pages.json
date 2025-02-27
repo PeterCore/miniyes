@@ -80,6 +80,12 @@
       "style": {
         "navigationBarTitleText": "编辑"
       }
+    },
+    {
+      "path": "pages/timetable-detail/index",
+      "style": {
+        "navigationBarTitleText": "课程详情"
+      }
     }
   ],
   "subPackages": [

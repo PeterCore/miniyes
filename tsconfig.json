@@ -5,7 +5,9 @@
     "lib": ["DOM", "ESNext"],
     "baseUrl": ".",
     "module": "ESNext",
-    "moduleResolution": "bundler",
+    // "moduleResolution": "bundler", // 必要时启用
+
+    "moduleResolution": "node",
     "paths": {
       "@/*": ["src/*"]
     },
@@ -18,7 +20,7 @@
     "sourceMap": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+    "skipLibCheck": true// 必须设置为 node
   },
   "vueCompilerOptions": {
     "plugins": ["@uni-helper/uni-app-types/volar-plugin"]

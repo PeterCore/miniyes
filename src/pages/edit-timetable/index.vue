@@ -57,7 +57,6 @@
   <picker-students
     :show="showPickerStudent"
     :students="studentList"
-    @update:show="val => showPickerStudent = val"
     @confirm="handleStudentsConfirm"
   />
   <up-datetime-picker
@@ -431,10 +430,10 @@ const cancel = () => {
 }
 
 .time-title {
-  @apply  justify-center items-center font-size-30rpx color-_wn_969799 mx-[20rpx];
+  @apply  justify-center items-center text-30rpx text-[#969799] mx-[20rpx];
 }
 .button {
-  @apply h-[50rpx] w-[100rpx] text-[22rpx] text-white flex-shrink-0 flex-row mr-[10rpx] bg-[#21d59d] items-center transition-all duration-300 hover:bg-[#21d59d] hover:shadow-[0_0_20px_##3ed268] hover:scale-110 active:bg-[#3ed268] active:scale-95 active:shadow-none
+  @apply h-[50rpx] w-[100rpx] text-[22rpx] text-white flex-shrink-0 flex-row mr-[10rpx] bg-[#21d59d] items-center transition-all duration-300 hover:bg-[#21d59d] hover:shadow-[0_0_20px_#3ed268] hover:scale-110 active:bg-[#3ed268] active:scale-95 active:shadow-none
 }
 .time-text {
   font-size: 26rpx;

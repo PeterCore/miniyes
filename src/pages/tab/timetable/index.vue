@@ -13,11 +13,11 @@
       </view>
     </view>
     <view v-for="(item, index) in timeTables" :key="index">
-      <up-card :border="false" padding="20rpx 20rpx 20rpx" margin="10rpx 20rpx" :title="item.course_name" title-color="#ff7043" :sub-title="item.schedule_time.split(' ')[1]" @body-click="onSelected">
+      <up-card :border="false" padding="20rpx 20rpx 20rpx" margin="10rpx 20rpx" :title="item.course_name" title-color="#ff7043" :sub-title="item.schedule_time.split(' ')[1]" @body-click="onSelected(item.timetable_id ?? '')">
         <template #body>
-          <view class="mb-[20rpx]">
+          <!-- <view class="mb-[20rpx]">
             <up-line-progress :percentage="0" height="20rpx" active-color="#3ed268" :show-text="true" />
-          </view>
+          </view> -->
 
           <view class="flex flex-col gap-[8rpx]">
             <view class="flex flex-row items-center justify-start">
@@ -71,8 +71,9 @@ import { ref } from 'vue';
 const useStore = useTimetableStore();
 const timeTables = ref<TimetableInfo[]>([]);
 
-const onSelected = () => {
-  console.log('selected');
+const onSelected = (timetableId: string) => {
+  console.log('selected timetable id is ', timetableId);
+  uni.navigateTo({ url: `/pages/timetable-detail/index?Id=${timetableId}` });
 };
 
 const onStartCourse = () => {
@@ -80,11 +81,9 @@ const onStartCourse = () => {
 };
 
 const sortByTimeDesc = (items: TimetableInfo[]): TimetableInfo[] => {
-  console.log('-----sort-----');
   return [...items].sort((a, b) => {
     // 将时间转换为可比较的格式
     const parseTime = (timeStr: string) => {
-      console.log(`old datetime is ${timeStr}`);
       const [datePart, timePart] = timeStr.split(' ');
       const [year, month, day] = datePart.split('-').map(Number);
       const [startTime, _] = timePart.split('-');
@@ -151,7 +150,7 @@ const onEditTimetable = () => {
 }
 
 .circle-container {
-  @apply bg-#1db147 mr-20rpx text-white rounded-full w-[50px] h-[50px] flex items-center justify-center;
+  @apply bg-[#1db147] mr-20rpx text-white rounded-full w-[50px] h-[50px] flex items-center justify-center;
 }
 
 .circle-text {
@@ -174,14 +173,14 @@ const onEditTimetable = () => {
 }
 
 .add-button {
-  @apply h-[60rpx] w-[180rpx] text-[24rpx] text-white flex-shrink-0 flex-row mr-[10rpx] bg-[#21d59d] items-center transition-all duration-300 hover:bg-[#21d59d] hover:shadow-[0_0_20px_##3ed268] hover:scale-110 active:bg-[#3ed268] active:scale-95 active:shadow-none
+  @apply h-[60rpx] w-[180rpx] text-[24rpx] text-white flex-shrink-0 flex-row mr-[10rpx] bg-[#21d59d] items-center transition-all duration-300 hover:bg-[#21d59d] hover:shadow-[0_0_20px_#3ed268] hover:scale-110 active:bg-[#3ed268] active:scale-95 active:shadow-none
 }
 .button {
-  @apply h-[50rpx] w-[120rpx] text-[21rpx] text-white flex-shrink-0 flex-row mr-[10rpx] bg-[#21d59d] items-center transition-all duration-300 hover:bg-[#21d59d] hover:shadow-[0_0_20px_##3ed268] hover:scale-110 active:bg-[#3ed268] active:scale-95 active:shadow-none
+  @apply h-[50rpx] w-[120rpx] text-[21rpx] text-white flex-shrink-0 flex-row mr-[10rpx] bg-[#21d59d] items-center transition-all duration-300 hover:bg-[#21d59d] hover:shadow-[0_0_20px_#3ed268] hover:scale-110 active:bg-[#3ed268] active:scale-95 active:shadow-none
 }
 
 .cancel-button {
-  @apply ml-[20rpx] h-[60rpx] w-[120rpx] text-[24rpx] text-white flex-shrink-0 flex-row mr-[10rpx] bg-[#21d59d] items-center transition-all duration-300 hover:bg-[#21d59d] hover:shadow-[0_0_20px_##3ed268] hover:scale-110 active:bg-[#3ed268] active:scale-95 active:shadow-none
+  @apply ml-[20rpx] h-[60rpx] w-[120rpx] text-[24rpx] text-white flex-shrink-0 flex-row mr-[10rpx] bg-[#21d59d] items-center transition-all duration-300 hover:bg-[#21d59d] hover:shadow-[0_0_20px_#3ed268] hover:scale-110 active:bg-[#3ed268] active:scale-95 active:shadow-none
 }
 
 .group-container {

@@ -60,6 +60,7 @@
 import type { TeacherInfo } from '@/store/modules/teacher/types';
 import { useTeacherStore } from '@/store/index';
 import { pinyin } from 'pinyin-pro';
+import { ref } from 'vue';
 
 const searchQuery = ref('');
 const useStore = useTeacherStore();
@@ -97,27 +98,18 @@ const onCancel = () => {
   focus.value = false;
   searchQuery.value = '';
 };
-
 const onChange = (e: any) => {
   const keyword = e;
   console.log(`keyword is ${keyword}`);
   searchResult.value = teachers.value.filter((e: TeacherInfo) =>
     e.name.includes(keyword) || e.spell_name.includes(keyword));
 };
-
-const filteredMembers = computed(() => {
-  return teachers.value.filter((e: TeacherInfo) =>
-    e.name.includes(searchQuery.value) || e.spell_name.includes(searchQuery.value),
-  );
-});
-
 // 按首字母分组排序
 const groupedMembers = computed(() => {
   const groups: Record<string, TeacherInfo[]> = {};
   // 按字母分组
   teachers.value.forEach((member: TeacherInfo) => {
     const firstLetter = pinyin(member.name.charAt(0), { pattern: 'first', toneType: 'none' }).toUpperCase();
-    console.log(`首字母 teacher ${firstLetter} ---- ${firstLetter}`);
 
     if (!groups[firstLetter]) {
       groups[firstLetter] = [];
@@ -141,11 +133,11 @@ const onAddTeachers = () => {
 
 <style lang="scss" scoped>
 .page-container {
-  @apply bg-#f5f5f5
+  @apply bg-[#f5f5f5]
 }
 
 .circle-container {
-  @apply bg-#1db147 mr-20rpx text-white rounded-full w-[50px] h-[50px] flex items-center justify-center;
+  @apply bg-[#1db147] mr-20rpx text-white rounded-full w-[50px] h-[50px] flex items-center justify-center;
 }
 
 .circle-text {
@@ -168,11 +160,11 @@ const onAddTeachers = () => {
 }
 
 .add-button {
-  @apply h-[60rpx] w-[180rpx] text-[24rpx] text-white flex-shrink-0 flex-row mr-[10rpx] bg-[#21d59d] items-center transition-all duration-300 hover:bg-[#21d59d] hover:shadow-[0_0_20px_##3ed268] hover:scale-110 active:bg-[#3ed268] active:scale-95 active:shadow-none
+  @apply h-[60rpx] w-[180rpx] text-[24rpx] text-white flex-shrink-0 flex-row mr-[10rpx] bg-[#21d59d] items-center transition-all duration-300 hover:bg-[#21d59d] hover:shadow-[0_0_20px_#3ed268] hover:scale-110 active:bg-[#3ed268] active:scale-95 active:shadow-none
 }
 
 .cancel-button {
-  @apply ml-[20rpx] h-[60rpx] w-[120rpx] text-[24rpx] text-white flex-shrink-0 flex-row mr-[10rpx] bg-[#21d59d] items-center transition-all duration-300 hover:bg-[#21d59d] hover:shadow-[0_0_20px_##3ed268] hover:scale-110 active:bg-[#3ed268] active:scale-95 active:shadow-none
+  @apply ml-[20rpx] h-[60rpx] w-[120rpx] text-[24rpx] text-white flex-shrink-0 flex-row mr-[10rpx] bg-[#21d59d] items-center transition-all duration-300 hover:bg-[#21d59d] hover:shadow-[0_0_20px_#3ed268] hover:scale-110 active:bg-[#3ed268] active:scale-95 active:shadow-none
 }
 
 .group-container {

@@ -111,11 +111,11 @@ onUnmounted(() => {
 });
 
 // 搜索查询
-const filteredMembers = computed(() => {
-  return students.value.filter((e: StudentInfo) =>
-    e.name.includes(searchQuery.value) || e.spell_name.includes(searchQuery.value),
-  );
-});
+// const filteredMembers = computed(() => {
+//   return students.value.filter((e: StudentInfo) =>
+//     e.name.includes(searchQuery.value) || e.spell_name.includes(searchQuery.value),
+//   );
+// });
 
 // 按首字母分组排序
 const groupedMembers = computed(() => {
@@ -173,11 +173,11 @@ const groupedMembers = computed(() => {
 }
 
 .add-button {
-  @apply h-[60rpx] w-[180rpx] text-[24rpx] text-white flex-shrink-0 flex-row mr-[10rpx] bg-[#21d59d] items-center transition-all duration-300 hover:bg-[#21d59d] hover:shadow-[0_0_20px_##3ed268] hover:scale-110 active:bg-[#3ed268] active:scale-95 active:shadow-none
+  @apply h-[60rpx] w-[180rpx] text-[24rpx] text-white flex-shrink-0 flex-row mr-[10rpx] bg-[#21d59d] items-center transition-all duration-300 hover:bg-[#21d59d] hover:shadow-[0_0_20px_#3ed268] hover:scale-110 active:bg-[#3ed268] active:scale-95 active:shadow-none
 }
 
 .cancel-button {
-  @apply ml-[20rpx] h-[60rpx] w-[120rpx] text-[24rpx] text-white flex-shrink-0 flex-row mr-[10rpx] bg-[#21d59d] items-center transition-all duration-300 hover:bg-[#21d59d] hover:shadow-[0_0_20px_##3ed268] hover:scale-110 active:bg-[#3ed268] active:scale-95 active:shadow-none
+  @apply ml-[20rpx] h-[60rpx] w-[120rpx] text-[24rpx] text-white flex-shrink-0 flex-row mr-[10rpx] bg-[#21d59d] items-center transition-all duration-300 hover:bg-[#21d59d] hover:shadow-[0_0_20px_#3ed268] hover:scale-110 active:bg-[#3ed268] active:scale-95 active:shadow-none
 }
 
 .group-container {

@@ -96,8 +96,6 @@
 
 <script setup lang="ts">
 import type { CourseInfo } from '@/store/modules/course/types';
-import createCourse from '@/api/cloud_api/index';
-import updateCourse from '@/api/cloud_api/index';
 
 import { useCourseStore } from '@/store/index';
 import { reactive, ref } from 'vue';

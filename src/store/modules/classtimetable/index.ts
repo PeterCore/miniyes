@@ -11,7 +11,17 @@ const useTimetableStore = defineStore('classtimetable', {
     async getTimetable(params: GetTimetableParams) {
       const res = await TimetableApi.getTimetableList(params);
       if (res.success) {
-        this.timetables = res.data!.list;
+        const timetableList: TimetableInfo[] = res.data!.list.map((item: any) => ({
+          timetable_id: item._id,
+          course_id: item.course_id,
+          status: item.status,
+          teacher: item.teacher,
+          students: item.students,
+          course_name: item.course_name,
+          schedule_time: item.schedule_time,
+          remark: item.remark,
+        }));
+        this.timetables = timetableList;
       }
       else {
         this.timetables = [];
@@ -54,7 +64,18 @@ const useTimetableStore = defineStore('classtimetable', {
       if (isRefresh) {
         const res = await TimetableApi.getTimetableList(params);
         if (res.success) {
-          this.timetables = res.data!.list;
+          const timetableList: TimetableInfo[] = res.data!.list.map((item: any) => ({
+            timetable_id: item._id,
+            course_id: item.course_id,
+            status: item.status,
+            teacher: item.teacher,
+            students: item.students,
+            course_name: item.course_name,
+            schedule_time: item.schedule_time,
+            remark: item.remark,
+          }));
+
+          this.timetables = timetableList;
           return [true, res.message];
         }
         else {
@@ -89,6 +110,9 @@ const useTimetableStore = defineStore('classtimetable', {
   },
   getters: {
     getAllTimetable: state => state.timetables,
+    getTimeTableById: state => (timetableId: string) => {
+      return state.timetables?.find(e => e.timetable_id === timetableId);
+    },
 
     // getTimetable(state) {
     //   return state.timetable;
