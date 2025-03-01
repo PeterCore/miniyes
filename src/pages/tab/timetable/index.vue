@@ -1,6 +1,7 @@
 <template>
   <view class="page-container">
     <!-- 搜索框 -->
+
     <view class="h-[100rpx] flex-grow flex-col items-start bg-white p-20rpx">
       <view class="header-container">
         <view class="line" />
@@ -12,6 +13,8 @@
         </button>
       </view>
     </view>
+    <z-paging ref="pagingRef" v-model="timeTables" @query="queryList"  @onRefresh="onRefresh" :use-page-scroll="true">
+
     <view v-for="(item, index) in timeTables" :key="index">
       <up-card :border="false" padding="20rpx 20rpx 20rpx" margin="10rpx 20rpx" :title="item.course_name" title-color="#ff7043" :sub-title="item.schedule_time.split(' ')[1]" @body-click="onSelected(item.timetable_id ?? '')">
         <template #body>
@@ -59,6 +62,7 @@
         </template>
       </up-card>
     </view>
+  </z-paging>
   </view>
 </template>
 
@@ -67,9 +71,56 @@ import type { TimetableInfo } from '@/store/modules/classtimetable/types';
 import { useTimetableStore } from '@/store/index';
 import { TimetableStatus } from '@/store/modules/classtimetable/types';
 import { ref } from 'vue';
+import { usePermission } from '@/hooks';
+
+let currentPage = 1;
+
+const pagingRef = ref<InstanceType<typeof zPaging> | null>(null);
+
 
 const useStore = useTimetableStore();
 const timeTables = ref<TimetableInfo[]>([]);
+
+onShow(async () => {
+  const hasPermission = await usePermission();
+  if(hasPermission){
+    fetchTimetables(1, 10,true);
+  }
+  console.log(hasPermission ? '已登录' : '未登录，拦截跳转');
+});
+
+const queryList = () => {
+  console.log('query list');
+  // getTimetables(1, 10, true);
+  let isRefresh = true;
+  if (currentPage !== 1) {
+    isRefresh = false;
+  }
+  fetchTimetables(currentPage, 10,isRefresh).then(() => {
+      let total =  useStore.getTotal
+      let currentTotal = timeTables.value.length;
+      if(total > currentTotal){
+        currentPage++;
+      }
+    });
+  setTimeout(() => {
+    // 1秒之后停止刷新动画
+      pagingRef.value?.complete(timeTables.value);
+
+  }, 1000);
+
+}
+// 滚动到底部手动触发
+// const onScroll = (e: any) => {
+//   if (isReachBottom(e)) {
+//     pagingRef.value?.doLoadMore()
+//   }
+// }
+const onRefresh = () => {
+  console.log('onRefresh list');
+  currentPage = 1;
+
+};
 
 const onSelected = (timetableId: string) => {
   console.log('selected timetable id is ', timetableId);
@@ -102,13 +153,13 @@ const sortByTimeDesc = (items: TimetableInfo[]): TimetableInfo[] => {
   });
 };
 
-const getTimetables = async (page: number, pageSize: number, isRefresh: boolean) => {
+const fetchTimetables = async (page: number, pageSize: number , isRefresh: boolean) => {
   uni.showLoading({ title: '加载中...' });
   const params = {
     page,
     pageSize,
   };
-  const res = await useStore.getClassTimetable(params, isRefresh);
+  const res = await useStore.fectchTimetable(params,isRefresh);
   uni.hideLoading();
   if (res[0] === true) {
     uni.$u.toast('加载成功');
@@ -121,9 +172,7 @@ const getTimetables = async (page: number, pageSize: number, isRefresh: boolean)
   }
 };
 
-onLoad((_: any) => {
-  getTimetables(1, 10, true);
-});
+
 
 const unsubscribe = useStore.$subscribe((_mutation: any, _state: any) => {
   if (_mutation.storeId === 'classtimetable') {

@@ -6,6 +6,9 @@ import { defineStore } from 'pinia';
 const useTimetableStore = defineStore('classtimetable', {
   state: (): TimetableState => ({
     timetables: [],
+    totalPages: 0,
+    total: 0,
+    current: 1,
   }),
   actions: {
     async getTimetable(params: GetTimetableParams) {
@@ -60,10 +63,15 @@ const useTimetableStore = defineStore('classtimetable', {
       return [false, '操作失败'];
     },
 
-    async getClassTimetable(params: GetTimetableParams, isRefresh: boolean) {
-      if (isRefresh) {
-        const res = await TimetableApi.getTimetableList(params);
-        if (res.success) {
+    async fectchTimetable(params: GetTimetableParams, isRefresh: boolean) {
+      const res = await TimetableApi.getTimetableList(params);
+      if (res.success) {
+         console.log('获取课表列表', JSON.stringify(res.data?.pagination));
+          this.totalPages = res.data?.pagination.totalPages ?? 0;
+          this.total = res.data?.pagination.total ?? 0;
+          this.current = res.data?.pagination.current ?? 1;
+
+        if (res.data!.list.length > 0) {
           const timetableList: TimetableInfo[] = res.data!.list.map((item: any) => ({
             timetable_id: item._id,
             course_id: item.course_id,
@@ -74,19 +82,20 @@ const useTimetableStore = defineStore('classtimetable', {
             schedule_time: item.schedule_time,
             remark: item.remark,
           }));
-
-          this.timetables = timetableList;
-          return [true, res.message];
+          console.log('获取课表列表',isRefresh);
+          if(isRefresh) {
+            this.timetables = timetableList;
+          }else {
+            this.timetables.push(...timetableList);
+          }
         }
-        else {
-          return [false, res.message];
-        }
+        return [true, res.message];
       }
       else {
-        this.timetables = this.timetables?.slice((params.page! - 1) * params.pageSize!, params.page! * params.pageSize!);
-        return [true, '获取成功'];
+        return [false, res.message];
       }
     },
+
 
     async deleteTimetable(timetableId: string) {
       const res = await TimetableApi.deleteTimetable(timetableId);
@@ -109,7 +118,10 @@ const useTimetableStore = defineStore('classtimetable', {
 
   },
   getters: {
+    getCurrent: state => state.current,
     getAllTimetable: state => state.timetables,
+    getTotalPages: state => state.totalPages,
+    getTotal: state => state.total,
     getTimeTableById: state => (timetableId: string) => {
       return state.timetables?.find(e => e.timetable_id === timetableId);
     },

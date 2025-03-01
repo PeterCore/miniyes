@@ -57,6 +57,7 @@
   <picker-students
     :show="showPickerStudent"
     :students="studentList"
+    @update:show="handleUpdateShow"
     @confirm="handleStudentsConfirm"
   />
   <up-datetime-picker
@@ -142,6 +143,9 @@ const expandTime = () => {
   }
   isExpandTime.value = !isExpandTime.value;
   arrowDirection.value = isExpandTime.value ? 'up' : 'down';
+};
+const handleUpdateShow = (val: boolean) => {
+  showPickerStudent.value = val;
 };
 // timetable_id?: string;
 //   course_id: string;

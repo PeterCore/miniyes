@@ -16,6 +16,13 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
+import { usePermission } from '@/hooks';
+
+onShow(async () => {
+  const hasPermission = await usePermission();
+  console.log(hasPermission ? '已登录' : '未登录，拦截跳转');
+});
 const pagingRef = ref<InstanceType<typeof zPaging> | null>(null);
 const dataList = ref<string[]>([]);
 

@@ -16,6 +16,9 @@ export interface TimetableInfo {
 }
 export interface TimetableState {
   timetables: TimetableInfo[];
+  current: number;
+  totalPages: number;
+  total: number;
 }
 
 export enum TimetableStatus {

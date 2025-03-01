@@ -54,15 +54,15 @@ const courseDetail = ref<CourseInfo>({ course_cost: 80, course_id: '0', course_n
 
 // onLoad 获取传递的参数
 onLoad((query: any) => {
-  const courseParam = decodeURIComponent(query.course);
-  const jsonData = JSON.parse(courseParam); //
-  const courseId = jsonData.id;
+  if(query != undefined) {
+    const courseId = query.Id;
   if (courseId) {
     const course = courseStore.getCourseById(courseId);
     if (course) {
       courseDetail.value = course;
     }
   }
+}
 });
 
 const unsubscribe = courseStore.$subscribe((_mutation: any, _state: any) => {

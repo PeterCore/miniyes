@@ -119,15 +119,15 @@ const checkboxChange = (value: any) => {
   // }
 };
 
+// 关闭弹窗
+const handleClose = () => {
+  emit('update:show', false);
+};
+
 // 确认选择
 const handleConfirm = () => {
   emit('confirm', [...selectedIds.value]);
   handleClose();
-};
-
-// 关闭弹窗
-const handleClose = () => {
-  emit('update:show', false);
 };
 </script>
 
