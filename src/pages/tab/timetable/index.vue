@@ -13,7 +13,7 @@
         </button>
       </view>
     </view>
-    <z-paging ref="pagingRef" v-model="timeTables" @query="queryList"  @onRefresh="onRefresh" :use-page-scroll="true">
+    <z-paging ref="pagingRef" @query="queryList" :auto="false" @onRefresh="onRefresh" :use-page-scroll="true">
 
     <view v-for="(item, index) in timeTables" :key="index">
       <up-card :border="false" padding="20rpx 20rpx 20rpx" margin="10rpx 20rpx" :title="item.course_name" title-color="#ff7043" :sub-title="item.schedule_time.split(' ')[1]" @body-click="onSelected(item.timetable_id ?? '')">
@@ -84,42 +84,31 @@ const timeTables = ref<TimetableInfo[]>([]);
 onShow(async () => {
   const hasPermission = await usePermission();
   if(hasPermission){
-    fetchTimetables(1, 10,true);
+   await fetchTimetables(1, 10,true);
+   const list = timeTables.value;
+  pagingRef.value?.complete(list);
+  currentPage++;
+
   }
   console.log(hasPermission ? '已登录' : '未登录，拦截跳转');
 });
 
-const queryList = () => {
+const queryList = async () => {
   console.log('query list');
-  // getTimetables(1, 10, true);
   let isRefresh = true;
   if (currentPage !== 1) {
     isRefresh = false;
   }
-  fetchTimetables(currentPage, 10,isRefresh).then(() => {
-      let total =  useStore.getTotal
-      let currentTotal = timeTables.value.length;
-      if(total > currentTotal){
-        currentPage++;
-      }
-    });
-  setTimeout(() => {
-    // 1秒之后停止刷新动画
-      pagingRef.value?.complete(timeTables.value);
-
-  }, 1000);
+  await fetchTimetables(currentPage, 10,isRefresh);
+  const list = timeTables.value;
+  pagingRef.value?.complete(list);
+  currentPage++;
 
 }
-// 滚动到底部手动触发
-// const onScroll = (e: any) => {
-//   if (isReachBottom(e)) {
-//     pagingRef.value?.doLoadMore()
-//   }
-// }
-const onRefresh = () => {
+
+const onRefresh = async () => {
   console.log('onRefresh list');
   currentPage = 1;
-
 };
 
 const onSelected = (timetableId: string) => {

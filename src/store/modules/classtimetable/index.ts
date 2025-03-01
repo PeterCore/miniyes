@@ -64,6 +64,7 @@ const useTimetableStore = defineStore('classtimetable', {
     },
 
     async fectchTimetable(params: GetTimetableParams, isRefresh: boolean) {
+      console.log('获取课表列表参数', JSON.stringify(params));
       const res = await TimetableApi.getTimetableList(params);
       if (res.success) {
          console.log('获取课表列表', JSON.stringify(res.data?.pagination));
